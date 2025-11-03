@@ -10,6 +10,8 @@ export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [hasError, setHasError] = useState(false);
+    const [error, setError] = useState("");
     
     return (
         <>
@@ -19,28 +21,47 @@ export default function Login() {
                     <h1 className="text-xl text-citrus-rose font-bold cursor-default">Login</h1>
                     <div>
                         <label className="block text-sm font-semibold text-citrus-orange">Email</label>
-                        <input className="bg-slate-200 w-full outline-none px-3 py-1.5 rounded-lg text-md text-citrus-pink font-semibold" type="email" onChange={(e) => { setEmail(e.target.value)}} placeholder="Email"/>
+                        <input className="bg-slate-200 w-full outline-none px-3 py-1.5 rounded-lg text-md text-citrus-pink font-semibold" type="email" onChange={(e) => {
+                             setEmail(e.target.value)
+                             setHasError(false)
+                        }} placeholder="Email"/>
                     </div>
                     <div>
                         <label className="block text-sm font-semibold text-citrus-orange">Password</label>
-                        <div className="bg-slate-200 w-full px-3 py-1.5 rounded-lg flex flex-row justify-between items-center">
-                            <input className="w-full outline-none text-md text-citrus-pink font-semibold" type={showPassword ? "text" : "password"} onChange={(e) => { setPassword(e.target.value)}} placeholder="Password"/>
+                        <div className="bg-slate-200 w-full px-3 py-1.5 rounded-lg flex flex-row justify-between items-center gap-2">
+                            <input className="w-full outline-none text-md text-citrus-pink font-semibold" type={showPassword ? "text" : "password"} onChange={(e) => {
+                                 setPassword(e.target.value)
+                                 setHasError(false)
+                            }} placeholder="Password"/>
                             <FontAwesomeIcon className="text-citrus-pink cursor-pointer" icon={showPassword ? faEye : faEyeSlash} onClick={() => setShowPassword(!showPassword)}/>
                         </div>
                     </div>
-                    <button 
-                        className="bg-citrus-rose w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold cursor-pointer transition-all duration-500 hover:text-rose-300 hover:scale-105 hover:shadow-lg"
-                        onClick={
-                            async () => {
-                                if(email.length > 0 && password.length > 0) {
-                                    const response = await (await axios.post("/api/login", { email, password }, { withCredentials: true })).data
-                                    if(response.status == 200) return navigate("/home")
+                    <div>
+                        { hasError ? <p className="text-sm text-rose-400 font-semibold">{error}</p> : <></>  }
+                        <button 
+                            className="bg-citrus-rose w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold cursor-pointer transition-all duration-500 hover:text-rose-300 hover:scale-105 hover:shadow-lg"
+                            onClick={
+                                async () => {
+                                    if(email.length > 0 && password.length > 0) {
+                                        if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                                            const response = await (await axios.post("/api/login", { email, password }, { withCredentials: true })).data
+                                            if(response.status == 200) {
+                                                return navigate("/home");
+                                            } else {
+                                                setHasError(true)
+                                                setError("Email or Password is incorrect.")
+                                            }
+                                        } else {
+                                            setHasError(true)
+                                            setError("Email is invalid.")
+                                        }
+                                    }
                                 }
-                            }
-                        }>
-                            LOGIN
-                    </button>
-                    <p className="text-sm text-slate-500 text-center">Don't have an account? <span className="hover:underline hover:text-citrus-rose cursor-pointer">Sign Up</span></p>
+                            }>
+                                LOGIN
+                        </button>
+                    </div>
+                    <p className="text-sm text-slate-500 text-center">Don't have an account? <span className="transition-all duration-100 hover:underline hover:text-citrus-rose hover:font-semibold cursor-pointer">Sign Up</span></p>
                 </div>
             </div>
         </>
