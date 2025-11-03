@@ -5,14 +5,16 @@ import passport from "passport"
 import logger from "./util/logger.js";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import cors from "cors";
+import bodyParser from "body-parser";
+
 import { initializePassport } from "./auth/passport.js";
 import User from "./database/user.js"
-import user from "./database/user.js";
 
 const app = express();
 const server = http.createServer(app);
 
-mongoose.connect("mongodb+srv://hewokwun:RmsRJ7MtzSV0xKzw@cluster0.iflmwna.mongodb.net/servicetogo", {
+mongoose.connect(process.env.MONGODB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => logger.info("MongoDB", "Connected successfully!"))
@@ -23,18 +25,21 @@ app.use(express.urlencoded({ extended: false }));
 app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post("/login", async (req, res, next) => {
-    if(req.isAuthenticated()) return res.status(401).json({ message: "Already Authenticated!"});
+    if(req.isAuthenticated()) return res.json({ status: 409, message: "Already Authenticated!"});
 
     passport.authenticate("local", (err, user, info) => {
         if (err) return next(err);
-        if (!user) return res.status(401).json({ message: "Invalid credentials" });
+        if (!user) return res.json({ status: 401, message: "Invalid credentials" });
 
         req.login(user, (err) => {
             if (err) return next(err);
             logger.info("AUTHENTICATOR", "User " + user.id + " logged in.");
-            res.json({ message: "Login successful!" });
+            res.json({ status: 200,  message: "Login successful!" });
         });
     })(req, res, next)
 })
@@ -43,32 +48,32 @@ app.post("/register", async (req, res) => {
     const { email, password, username } = req.body;
 
     const existing = await User.findOne({ email });
-    if(existing) return res.status(400).json({ message: "Email already exists!" });
+    if(existing) return res.json({ status: 409, message: "Email already exists!" });
 
     const hashed = await bcrypt.hash(password, 10);
     const user = new User({ email, username, password: hashed });
     await user.save();
 
     logger.info("AUTHENTICATOR", "A new user registered: " + user.id);
-    res.status(201).json({ message: "User registered successfully!" });
+    res.json({ status: 201, message: "User registered successfully!" });
 })
 
 app.get("/logout", async (req, res, next) => {
-    if(!req.isAuthenticated()) return res.status(400).json({ message: "Not Authenticated!" });
+    if(!req.isAuthenticated()) return res.json({ status: 401, message: "Not Authenticated!" });
 
     const user = req.user;
     req.logout((err) => {
         if(err) return next(err);
 
         logger.info("AUTHENTICATOR", "User " + user.id + " logged out.");
-        res.status(200).json({ message: "Logging out successfully!" });
+        res.json({ status: 200, message: "Logging out successfully!" });
     })
 })
 
 app.get("/user", async (req, res) => {
-    if(!req.isAuthenticated()) return res.status(400).json({ message: "Not authenticated "});
+    if(!req.isAuthenticated()) return res.json({ status: 409, message: "Not authenticated "});
 
-    res.status(200).json({ user: {
+    res.json({ status: 200, user: {
         id: req.user.id,
         email: req.user.email,
         username: req.user.username
@@ -76,7 +81,7 @@ app.get("/user", async (req, res) => {
 })
 
 app.get("/user/delete", async (req, res, next) => {
-    if(!req.isAuthenticated()) return res.status(400).json({ message: "Not authenticated "});
+    if(!req.isAuthenticated()) return res.json({ status: 409, message: "Not authenticated "});
 
     const user = req.user;
     req.logout(async (err) => {
@@ -87,7 +92,7 @@ app.get("/user/delete", async (req, res, next) => {
         await User.findOneAndDelete({ id: user.id })
 
         logger.info("AUTHENTICATOR", "User " + user.id + " deleted.");
-        res.status(200).json({ message: "Data deleted" });
+        res.json({ status: 200, message: "Data deleted" });
     })
 })
 

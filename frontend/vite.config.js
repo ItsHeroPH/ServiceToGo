@@ -8,6 +8,15 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
+  server: {
+    proxy: {
+      "/api" : {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, "")
+      }
+    }
+  },
   build: {
     modulePreload: true,
     minify: "terser",
@@ -28,8 +37,8 @@ export default defineConfig({
           }
           return "assets/[name]-[hash][extname]";
         },
-        chunkFileNames: "assets/scripts/[name]-[hash].js",
-        entryFileNames: "assets/scripts/[name]-[hash].js",
+        chunkFileNames: "assets/scripts/[hash].js",
+        entryFileNames: "assets/scripts/[hash].js",
       }
     }
   }
