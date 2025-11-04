@@ -96,7 +96,7 @@ app.get("/user/delete", async (req, res, next) => {
     })
 })
 
-server.listen(3000, "localhost", () => {
+server.listen(3000, process.env.BACKEND_URL, () => {
     logger.info("SERVER", "Backend is now online!")
 })
 

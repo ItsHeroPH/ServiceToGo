@@ -1,4 +1,4 @@
-import { faMagnifyingGlass, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faAngleUp, faMagnifyingGlass, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import logo from "../assets/logo.png"
@@ -28,6 +28,7 @@ export default function Home() {
                             <div className="flex flex-row items-center gap-1 cursor-pointer" onClick={() => setShowUserNav(!showUserNav)}>
                                 <img className="min-w-7 max-w-7 rounded-full" src={profile}/>
                                 <p className="text-md text-citrus-peach-light font-bold hidden sm:block">{user.username}</p>
+                                <FontAwesomeIcon className={`text-citrus-peach-light transition-all duration-300 ${showUserNav ? "rotate-180" : "rotate-0"}`} icon={faAngleUp}/>
                             </div>
                             <div className={`absolute right-0 mt-1 w-44 bg-white rounded-lg shadow-lg 
                                 flex flex-col gap-2 py-2 px-3 transition-all duration-300 ease-out 
