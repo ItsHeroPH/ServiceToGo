@@ -19,12 +19,23 @@ export default defineConfig(({ mode }) => {
           rewrite: path => path.replace(/^\/api/, "")
         }
       },
-       host: true,
+      host: true,
       port: 4173,
       strictPort: true,
-      preview: {
-        allowedHosts: ['servicetogo.store', 'www.servicetogo.store']
-      }
+      allowedHosts: ['servicetogo.store', 'www.servicetogo.store']
+    },
+    preview: {
+      proxy: {
+        "/api" : {
+          target: env.VITE_API_URL,
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/api/, "")
+        }
+      },
+      host: true,
+      port: 4173,
+      strictPort: true,
+      allowedHosts: ['servicetogo.store', 'www.servicetogo.store']
     },
     build: {
       modulePreload: true,
