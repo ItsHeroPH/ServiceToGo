@@ -18,6 +18,12 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           rewrite: path => path.replace(/^\/api/, "")
         }
+      },
+       host: true,
+      port: 4173,
+      strictPort: true,
+      preview: {
+        allowedHosts: ['servicetogo.store', 'www.servicetogo.store']
       }
     },
     build: {
