@@ -17,7 +17,12 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_API_URL,
           changeOrigin: true,
           rewrite: path => path.replace(/^\/api/, "")
-        }
+        },
+        "/socket.io": {
+          target: env.VITE_API_URL,
+          changeOrigin: true,
+          ws: true,
+        },
       },
       host: true,
       port: 4173,

@@ -10,7 +10,7 @@ import ChatRoom from "../components/ChatRoom";
 import axios from "axios";
 import { io } from "socket.io-client";
 
-const socket = io("/api/", { withCredentials: true });
+const socket = io("/", { withCredentials: true });
 
 export default function Chats() {
     const navigate = useNavigate();
