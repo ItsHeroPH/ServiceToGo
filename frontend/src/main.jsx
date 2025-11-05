@@ -7,6 +7,7 @@ import LoadingScreen from './pages/LoadingScreen'
 
 const Home = lazy(() => import("./pages/Home"))
 const Login = lazy(() => import("./pages/Login"))
+const SignUp = lazy(() => import("./pages/SignUp"))
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,20 @@ const router = createBrowserRouter([
         <LoadingScreen/>
       }>
         <Login />
+      </Suspense>
+    ),
+    loader: async () => {
+      const userFetch = (await axios.get(`/api/user`, { withCredentials: true })).data;
+      if(userFetch.status == 200) return redirect("/");
+    }
+  },
+  {
+    path: "/register",
+    element: (
+      <Suspense fallback={
+        <LoadingScreen/>
+      }>
+        <SignUp />
       </Suspense>
     ),
     loader: async () => {

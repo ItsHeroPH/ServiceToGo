@@ -41,6 +41,10 @@ export default function Home() {
                                     Chats
                                 </a>
                                 <a className="text-md text-slate-500 font-semibold cursor-pointer transition-all duration-500 hover:text-citrus-pink" onClick={async() => {
+                                    const response = (await axios.get("/api/user/delete")).data
+                                    if(response.status == 200) return navigate("/login")
+                                }}>Delete Account</a>
+                                <a className="text-md text-slate-500 font-semibold cursor-pointer transition-all duration-500 hover:text-citrus-pink" onClick={async() => {
                                     const response = (await axios.get("/api/logout")).data
                                     if(response.status == 200) return navigate("/login")
                                 }}>Logout</a>
