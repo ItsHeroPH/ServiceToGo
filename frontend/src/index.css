@@ -37,3 +37,12 @@
     --color-citrus-deep-forest: #456026;
     --color-citrus-moss: #324C19;
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

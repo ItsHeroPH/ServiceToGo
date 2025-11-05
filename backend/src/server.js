@@ -7,12 +7,21 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import cors from "cors";
 import bodyParser from "body-parser";
+import { Server } from "socket.io"
 
 import { initializePassport } from "./auth/passport.js";
 import User from "./database/user.js"
+import Message from "./database/message.js";
 
 const app = express();
 const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: [process.env.FRONTEND_URL],
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+})
 
 mongoose.connect(process.env.MONGODB_URL, {
   useNewUrlParser: true,
@@ -25,7 +34,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
+app.use(cors({ origin: [process.env.FRONTEND_URL], credentials: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -93,6 +102,50 @@ app.get("/user/delete", async (req, res, next) => {
 
         logger.info("AUTHENTICATOR", "User " + user.id + " deleted.");
         res.json({ status: 200, message: "Data deleted" });
+    })
+})
+
+app.get("/users", async (req, res) => {
+    if(!req.isAuthenticated()) return res.json({ status: 409, message: "Not authenticated "});
+
+    const users = await User.find({});
+
+    return res.json({ status: 200, users: users.filter((user) => user.id != req.user.id).map((user) => { return { id: user.id, username: user.username } })})
+})
+
+app.get("/message/:userId", async (req, res) => {
+    if(!req.isAuthenticated()) return res.json({ status: 409, message: "Not authenticated "});
+
+    const { userId } = req.params;
+    if(!userId || req.user.id == userId) return res.json({ status: 403, message: "Access denied" });
+
+    const messages = await Message.find({
+        $or: [
+            { fromUser: req.user.id, toUser: userId },
+            { fromUser: userId, toUser: req.user.id }
+        ]
+    });
+
+    return res.json({ status: 200, messages: messages.map((msg) => 
+        { return { id: msg.id, from: msg.fromUser, to: msg.toUser, message: msg.message, createdAt: msg.createdAt }}
+    ) })
+})
+
+io.on("connection", (socket) => {
+
+    socket.on("join_message", (userId) => socket.join(userId))
+
+    socket.on("send_message", async (data) => {
+        const { from, to, message } = data;
+        const msg = new Message({ fromUser: from, toUser: to, message: message });
+        await msg.save();
+
+        
+        logger.info("MESSENGER", `User ${from} sent a message to ${to}.`);
+
+        const msgData = { id: msg.id, from: msg.fromUser, to: msg.toUser, message: msg.message, createdAt: msg.createdAt }
+        io.to(from).emit("receive_message", msgData)
+        io.to(to).emit("receive_message", msgData)
     })
 })
 

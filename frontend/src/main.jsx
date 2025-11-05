@@ -8,6 +8,7 @@ import LoadingScreen from './pages/LoadingScreen'
 const Home = lazy(() => import("./pages/Home"))
 const Login = lazy(() => import("./pages/Login"))
 const SignUp = lazy(() => import("./pages/SignUp"))
+const Chats = lazy(() => import("./pages/Chats"))
 
 const router = createBrowserRouter([
   {
@@ -58,7 +59,25 @@ const router = createBrowserRouter([
       const userFetch = (await axios.get(`/api/user`, { withCredentials: true })).data;
       if(userFetch.status == 200) return redirect("/");
     }
-  }
+  },
+  {
+    path: "/chats",
+    element: (
+      <Suspense fallback={
+        <LoadingScreen/>
+      }>
+        <Chats />
+      </Suspense>
+    ),
+    loader: async () => {
+      const userFetch = await axios.get(`/api/user`, { withCredentials: true });
+      if(userFetch.data.status == 409) return redirect("/login");
+      
+      const userListFetch = await axios.get(`api/users`, { withCredentials: true });
+
+      return { user: userFetch.data.user, users: userListFetch.data.users }
+    }
+  },
 ])
 
 createRoot(document.getElementById('root')).render(
