@@ -67,7 +67,7 @@ export default function Login() {
                                         }
                                     } else {
                                         setHasError(true)
-                                        setError("Please fill up the provided fields")
+                                        setError("Please fill up the provided fields.")
                                     }
                                 }
                             }>

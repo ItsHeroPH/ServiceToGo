@@ -55,6 +55,9 @@ export default function Login() {
                                             setHasError(true)
                                             setError("Email is invalid.")
                                         }
+                                    } else {
+                                        setHasError(true)
+                                        setError("Please fill up the provided fields.")
                                     }
                                 }
                             }>
