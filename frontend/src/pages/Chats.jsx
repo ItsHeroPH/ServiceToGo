@@ -69,8 +69,10 @@ export default function Chats() {
                 </div>
                 <div className="w-full h-full flex flex-row gap-2 relative overflow-hidden">
                     <ChatSideBar users={users} showSidebar={showSidebar} onSelectUser={(u) => {
-                        setCurrentUser(u)
-                        setMessage("")
+                        if(u !== null) {
+                            setCurrentUser(u)
+                            setMessage("")
+                        }
                         setShowSideBar(false)
                     }}/>
                     <ChatRoom user={currentUser} message={message} messages={messages} onMessageChange={(msg) => {
