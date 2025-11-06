@@ -17,41 +17,73 @@ export default function Chats() {
     const { user, users } = useLoaderData();
     
     const [showSidebar, setShowSideBar] = useState(false);
-    const [currentUser, setCurrentUser] = useState(users.length > 0 ? users[0] : null);
+    const [currentUser, setCurrentUser] = useState(null);
     const [message, setMessage] = useState("");
-    const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState({});
+    const [latestMessages, setLatestMessages] = useState({});
+    const [usersList, setUsersList] = useState(users);
+
+    const handleNewMessage = (data) => {
+        const userId = data.from === user.id ? data.to : data.from;
+        setMessages((prev) => ({...prev, [userId]: [...(prev[userId] || []), data]}));
+        setLatestMessages((prev) => ({...prev, [userId]: data }));
+        setUsersList((prev) => {
+            const activeUser = prev.find((u) => u.id === userId);
+            if (!activeUser) return prev;
+            const otherUsers = prev.filter((u) => u.id !== userId);
+            return [activeUser, ...otherUsers];
+        });
+    };
 
     useEffect(() => {
+        const fetchAllMessage = async () => {
+             const messagePromises = users.map(async (u) => {
+                const res = await axios.get(`/api/message/${u.id}`, { withCredentials: true });
+                if (res.data.status === 200) {
+                    const sorted = [...res.data.messages].sort(
+                        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+                    );
+                    return { userId: u.id, messages: sorted };
+                } else {
+                    return { userId: u.id, messages: [] };
+                }
+            });
+
+            const results = await Promise.all(messagePromises);
+
+            const msgMap = {};
+            const latestMap = {};
+
+            results.forEach((r) => {
+                msgMap[r.userId] = r.messages;
+                if (r.messages.length > 0) {
+                    latestMap[r.userId] = r.messages[r.messages.length - 1];
+                }
+            })
+
+            const sortedUsers = users.sort((a, b) => {
+                const aTime = latestMap[a.id]?.createdAt ? new Date(latestMap[a.id].createdAt).getTime() : 0;
+                const bTime = latestMap[b.id]?.createdAt ? new Date(latestMap[b.id].createdAt).getTime() : 0;
+                return bTime - aTime;
+            });
+
+            setMessages(msgMap);
+            setLatestMessages(latestMap);
+            setUsersList(sortedUsers);
+            setCurrentUser(users.length > 0 ? sortedUsers[0] : null);
+        }
+
+        fetchAllMessage()
         socket.emit("join_message", user.id);
-    }, [user]);
+    }, [user])
 
     useEffect(() => {
         socket.on("receive_message", (data) => {
-            if (
-                (data.from === currentUser.id && data.to === user.id) ||
-                (data.from === user.id && data.to === currentUser.id)
-            ) {
-                setMessages((prev) => [...prev, data]);
-            }
+            handleNewMessage(data);
         });
 
         return () => socket.off("receive_message");
     }, [currentUser, user]);
-    
-    useEffect(() => {
-        const fetchMessage = async () => {
-            if (!currentUser) return;
-
-            try {
-                const res = await axios.get(`/api/message/${currentUser.id}`, { withCredentials: true });
-                if(res.data.status == 200) setMessages(res.data.messages);
-            } catch(err) {
-                setMessages([])
-            }
-        }
-
-        fetchMessage()
-    }, [currentUser])
 
     return (
         <>
@@ -68,7 +100,7 @@ export default function Chats() {
                     <UserNav user={user} />
                 </div>
                 <div className="w-full h-full flex flex-row gap-2 relative overflow-hidden">
-                    <ChatSideBar users={users} showSidebar={showSidebar} onSelectUser={(u) => {
+                    <ChatSideBar users={usersList} latestMessages={latestMessages} showSidebar={showSidebar} onSelectUser={(u) => {
                         if(u !== null) {
                             setCurrentUser(u)
                             setMessage("")

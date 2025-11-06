@@ -5,8 +5,8 @@ import ChatBubble from "./ChatBubble"
 import { useLoaderData } from "react-router-dom"
 import { useEffect, useRef, useState } from "react"
 
-export default function ChatRoom({ user, message, messages, onMessageChange, onMessageSent }) {
-    const { user: author } = useLoaderData();
+export default function ChatRoom({ user: currentUser, message, messages, onMessageChange, onMessageSent }) {
+    const { user } = useLoaderData();
     const bottomRef = useRef(null);
     const containerRef = useRef(null);
     const [isAtBottom, setIsAtBottom] = useState(true);
@@ -32,17 +32,17 @@ export default function ChatRoom({ user, message, messages, onMessageChange, onM
 
     return (
         <div className="bg-citrus-peach-light w-full h-full rounded-lg flex flex-col">
-            { user ? (
+            { currentUser ? (
                 <>
                     <div className="w-full h-14 shadow-xl p-2">
                         <div className="h-full flex items-center gap-2">
                             <img className="min-w-7 w-7 rounded-full" src={profile}/>
-                            <h1 className="text-lg text-citrus-rose font-bold">{user.username}</h1>
+                            <h1 className="text-lg text-citrus-rose font-bold">{currentUser.username}</h1>
                         </div>
                     </div>
                     <div ref={containerRef} className="w-full h-full p-3 overflow-y-scroll flex flex-col items-center gap-2 no-scrollbar">
-                        {messages.map((msg) => (
-                            <ChatBubble key={msg.id} user={author.id === msg.from ? author : user} data={msg} isOwner={msg.from === author.id} />
+                        {(messages[currentUser.id] ?? []).map((msg) => (
+                            <ChatBubble key={msg.id} user={user.id === msg.from ? user : currentUser} data={msg} isOwner={msg.from === user.id} />
                         ))}
                         <div ref={bottomRef}/>
                     </div>

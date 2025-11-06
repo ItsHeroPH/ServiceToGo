@@ -34,7 +34,7 @@ export default function ChatBubble({ user, data, isOwner }) {
                     <div className="w-full h-fit flex flex-col items-end gap-1">
                         <p className="text-sm text-citrus-orange font-medium">You<span className="hidden md:inline"> • {dateString}</span></p>
                         <div className="bg-slate-200 max-w-[66%] h-fit p-2 rounded-lg shadow-lg breaks-words">
-                            <p className="text-md text-citrus-orange font-medium break-all text-end">{data.message}</p>
+                            <p className="text-md text-citrus-orange font-medium break-all text-start">{data.message}</p>
                         </div>
                     </div>
                     <img className="min-w-10 w-10 rounded-full" src={profile}/>
@@ -45,7 +45,7 @@ export default function ChatBubble({ user, data, isOwner }) {
                     <div className="w-full h-fit flex flex-col items-start gap-1">
                         <p className="text-sm text-citrus-orange font-medium">{user.username}<span className="hidden md:inline"> • {dateString}</span></p>
                         <div className="bg-slate-200 max-w-[66%] h-fit p-2 rounded-lg shadow-lg breaks-words">
-                            <p className="text-md text-citrus-orange font-medium  break-all text-start">{data.message}</p>
+                            <p className="text-md text-citrus-orange font-medium break-all text-start">{data.message}</p>
                         </div>
                     </div>
                 </div>
