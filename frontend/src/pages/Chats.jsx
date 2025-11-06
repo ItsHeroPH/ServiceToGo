@@ -4,7 +4,7 @@ import logo from "../assets/logo.png"
 import UserNav from "../components/UserNav";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import ChatSideBar from "../components/ChatSideBar";
 import ChatRoom from "../components/ChatRoom";
 import axios from "axios";
@@ -93,7 +93,7 @@ export default function Chats() {
                         <button className="bg-citrus-peach-light px-2 rounded-lg cursor-pointer lg:hidden" onClick={() => {
                             setShowSideBar(!showSidebar)
                         }}>
-                            <FontAwesomeIcon className="text-citrus-rose" icon={faBars} />
+                            <FontAwesomeIcon className={`text-citrus-rose transition-all duration-200 ${showSidebar ? "rotate-90 scale-110" : "rotate-0 scale-100"}`} icon={showSidebar ? faXmark : faBars} />
                         </button>
                         <img className="w-17 cursor-pointer" src={logo} onClick={() => navigate("/home")}/>
                     </div>
