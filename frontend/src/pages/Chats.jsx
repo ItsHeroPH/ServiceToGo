@@ -17,7 +17,7 @@ export default function Chats() {
     const { user, users } = useLoaderData();
     
     const [showSidebar, setShowSideBar] = useState(false);
-    const [currentUser, setCurrentUser] = useState(users[0]);
+    const [currentUser, setCurrentUser] = useState(users.length > 0 ? users[0] : null);
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
 
