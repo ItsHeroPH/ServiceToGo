@@ -102,8 +102,8 @@ app.get("/user/delete", async (req, res, next) => {
         await User.findOneAndDelete({ id: user.id })
         await Message.deleteMany({
             $or: [
-                { fromUser: req.user.id },
-                { toUser: req.user.id }
+                { fromUser: user.id },
+                { toUser: user.id }
             ]
         });
 
