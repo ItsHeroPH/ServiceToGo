@@ -74,8 +74,22 @@ const router = createBrowserRouter([
       if(userFetch.data.status == 409) return redirect("/login");
       
       const userListFetch = await axios.get(`api/users`, { withCredentials: true });
+      const users = userListFetch.data.users;
 
-      return { user: userFetch.data.user, users: userListFetch.data.users }
+      const messagePromises = users.map(async (u) => {
+          const res = await axios.get(`/api/message/${u.id}`, { withCredentials: true });
+          if (res.data.status === 200) {
+              const sorted = [...res.data.messages].sort(
+                  (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+              );
+              return { userId: u.id, messages: sorted };
+          } else {
+              return { userId: u.id, messages: [] };
+          }
+      });
+      const results = await Promise.all(messagePromises);
+
+      return { user: userFetch.data.user, users: userListFetch.data.users, msgs: results }
     }
   },
 ])

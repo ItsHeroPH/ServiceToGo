@@ -14,7 +14,7 @@ const socket = io("/", { withCredentials: true });
 
 export default function Chats() {
     const navigate = useNavigate();
-    const { user, users } = useLoaderData();
+    const { user, users, msgs } = useLoaderData();
     
     const [showSidebar, setShowSideBar] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
@@ -36,44 +36,29 @@ export default function Chats() {
     };
 
     useEffect(() => {
-        const fetchAllMessage = async () => {
-             const messagePromises = users.map(async (u) => {
-                const res = await axios.get(`/api/message/${u.id}`, { withCredentials: true });
-                if (res.data.status === 200) {
-                    const sorted = [...res.data.messages].sort(
-                        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-                    );
-                    return { userId: u.id, messages: sorted };
-                } else {
-                    return { userId: u.id, messages: [] };
-                }
-            });
+        const msgMap = {};
+        const latestMap = {};
 
-            const results = await Promise.all(messagePromises);
+        msgs.forEach((r) => {
+            msgMap[r.userId] = r.messages;
+            if (r.messages.length > 0) {
+                latestMap[r.userId] = r.messages[r.messages.length - 1];
+            }
+        })
 
-            const msgMap = {};
-            const latestMap = {};
+        const sortedUsers = users.sort((a, b) => {
+            const aTime = latestMap[a.id]?.createdAt ? new Date(latestMap[a.id].createdAt).getTime() : 0;
+            const bTime = latestMap[b.id]?.createdAt ? new Date(latestMap[b.id].createdAt).getTime() : 0;
+            return bTime - aTime;
+        });
 
-            results.forEach((r) => {
-                msgMap[r.userId] = r.messages;
-                if (r.messages.length > 0) {
-                    latestMap[r.userId] = r.messages[r.messages.length - 1];
-                }
-            })
+        setMessages(msgMap);
+        setLatestMessages(latestMap);
+        setUsersList(sortedUsers);
+        setCurrentUser(users.length > 0 ? sortedUsers[0] : null);
+    }, [msgs, users])
 
-            const sortedUsers = users.sort((a, b) => {
-                const aTime = latestMap[a.id]?.createdAt ? new Date(latestMap[a.id].createdAt).getTime() : 0;
-                const bTime = latestMap[b.id]?.createdAt ? new Date(latestMap[b.id].createdAt).getTime() : 0;
-                return bTime - aTime;
-            });
-
-            setMessages(msgMap);
-            setLatestMessages(latestMap);
-            setUsersList(sortedUsers);
-            setCurrentUser(users.length > 0 ? sortedUsers[0] : null);
-        }
-
-        fetchAllMessage()
+    useEffect(() => {
         socket.emit("join_message", user.id);
     }, [user])
 
