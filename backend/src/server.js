@@ -7,7 +7,8 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import cors from "cors";
 import bodyParser from "body-parser";
-import { Server } from "socket.io"
+import { Server } from "socket.io";
+import Crypto from "crypto-js";
 
 import { initializePassport } from "./auth/passport.js";
 import User from "./database/user.js"
@@ -99,6 +100,12 @@ app.get("/user/delete", async (req, res, next) => {
         logger.info("AUTHENTICATOR", "User " + user.id + " logged out.");
 
         await User.findOneAndDelete({ id: user.id })
+        await Message.deleteMany({
+            $or: [
+                { fromUser: req.user.id },
+                { toUser: req.user.id }
+            ]
+        });
 
         logger.info("AUTHENTICATOR", "User " + user.id + " deleted.");
         res.json({ status: 200, message: "Data deleted" });
@@ -127,7 +134,7 @@ app.get("/message/:userId", async (req, res) => {
     });
 
     return res.json({ status: 200, messages: messages.map((msg) => 
-        { return { id: msg.id, from: msg.fromUser, to: msg.toUser, message: msg.message, createdAt: msg.createdAt }}
+        { return { id: msg.id, from: msg.fromUser, to: msg.toUser, message: Crypto.AES.decrypt(msg.message, process.env.MESSAGE_SECRET_KEY).toString(Crypto.enc.Utf8), createdAt: msg.createdAt }}
     ) })
 })
 
@@ -137,13 +144,13 @@ io.on("connection", (socket) => {
 
     socket.on("send_message", async (data) => {
         const { from, to, message } = data;
-        const msg = new Message({ fromUser: from, toUser: to, message: message });
+        const msg = new Message({ fromUser: from, toUser: to, message: Crypto.AES.encrypt(message, process.env.MESSAGE_SECRET_KEY).toString() });
         await msg.save();
 
         
         logger.info("MESSENGER", `User ${from} sent a message to ${to}.`);
 
-        const msgData = { id: msg.id, from: msg.fromUser, to: msg.toUser, message: msg.message, createdAt: msg.createdAt }
+        const msgData = { id: msg.id, from: msg.fromUser, to: msg.toUser, message: message, createdAt: msg.createdAt }
         io.to(from).emit("receive_message", msgData)
         io.to(to).emit("receive_message", msgData)
     })

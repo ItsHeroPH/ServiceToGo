@@ -38,7 +38,7 @@ export default function ChatRoom({ user, message, messages, onMessageChange, onM
                     <h1 className="text-lg text-citrus-rose font-bold">{user.username}</h1>
                 </div>
             </div>
-            <div ref={containerRef} className="w-full h-full p-3 overflow-y-scroll flex flex-col gap-2 no-scrollbar">
+            <div ref={containerRef} className="w-full h-full p-3 overflow-y-scroll flex flex-col items-center gap-2 no-scrollbar">
                 {messages.map((msg) => (
                     <ChatBubble key={msg.id} user={author.id === msg.from ? author : user} data={msg} isOwner={msg.from === author.id} />
                 ))}
