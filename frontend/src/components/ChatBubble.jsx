@@ -40,7 +40,7 @@ export default function ChatBubble({ user, data, isOwner }) {
                     <img className="min-w-10 w-10 rounded-full" src={profile}/>
                 </div>
             ) : (
-                <div className="w-full h-fit flex items-start gap-2">
+                <div className="w-full h-fit flex items-end gap-2">
                     <img className="min-w-10 w-10 rounded-full" src={profile}/>
                     <div className="w-full h-fit flex flex-col items-start gap-1">
                         <p className="text-sm text-citrus-orange font-medium">{user.username}<span className="hidden md:inline"> • {dateString}</span></p>
