@@ -55,6 +55,12 @@ app.use(passport.session());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use((req, res, next) => {
+    logger.info("Session", req.headers.origin)
+
+    next()
+})
+
 app.post("/login", async (req, res, next) => {
     if(req.isAuthenticated()) return res.json({ status: 409, message: "Already Authenticated!"});
 
