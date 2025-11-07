@@ -16,20 +16,10 @@ export default defineConfig(({ mode }) => {
         exclude: ["node_modules/**"],
         options: {
           identifierNamesGenerator: "hexadecimal",
-          compact: true,
-          controlFlowFlattening: true,
-          controlFlowFlatteningThreshold: 0.75,
-          deadCodeInjection: true,
-          deadCodeInjectionThreshold: 0.4,
-          debugProtection: false,
-          disableConsoleOutput: true,
-          rotateStringArray: true,
-          selfDefending: true,
           stringArray: true,
-          stringArrayEncoding: ["base64"],
-          stringArrayThreshold: 0.75,
-          transformObjectKeys: false,
-          unicodeEscapeSequence: false
+          stringArrayThreshold: 1,
+          compact: true,
+          controlFlowFlattening: false
         },
       }),
     ],
