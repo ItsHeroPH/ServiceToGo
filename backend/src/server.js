@@ -36,10 +36,10 @@ app.use(session({ secret: process.env.SESSION_SECRET_KEY, resave: false, saveUni
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cors({ 
-    origin: [process.env.FRONTEND_URL], 
+    origin: process.env.FRONTEND_URL, 
     methods: ['GET','POST','PUT','DELETE','OPTIONS'],
     allowedHeaders: ['Content-Type','Authorization'],
-    credentials: false
+    credentials: true
  }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
