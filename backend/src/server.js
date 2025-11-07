@@ -4,6 +4,7 @@ import http from "http"
 import passport from "passport"
 import logger from "./util/logger.js";
 import mongoose from "mongoose";
+import ConnectMongo from "connect-mongo";
 import bcrypt from "bcryptjs";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -40,6 +41,7 @@ app.use(cors({
     credentials: true
 }));
 app.use(session({
+    store: ConnectMongo.create({ mongoUrl: process.env.MONGODB_URL, autoRemove: "disabled" }),
     secret: process.env.SESSION_SECRET_KEY,
     resave: false,
     saveUninitialized: false,
@@ -48,6 +50,7 @@ app.use(session({
         secure: true,
         sameSite: "none",
         domain: process.env.FRONTEND_DOMAIN,
+        maxAge: 60000 * 60 * 24
     }
 }));
 app.use(passport.initialize());
