@@ -45,10 +45,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
-  const origin = req.get('origin') || req.get('referer');
-  if (origin && !origin.startsWith(`${process.env.FRONTEND_URL}`)) {
-    return res.status(403).json({ error: 'Forbidden' });
-  }
+  const origin = req.get('origin');
+
+  if(!origin || origin !== process.env.FRONTEND_URL) return res.status(409).send("Unauthorized Access");
+
+  res.header("Access-Control-Allow-Origin", origin);
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+
   next();
 });
 
