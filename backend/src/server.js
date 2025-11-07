@@ -33,7 +33,7 @@ mongoose.connect(process.env.MONGODB_URL, {
 initializePassport(passport)
 app.use(express.urlencoded({ extended: false }));
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET_KEY,
     resave: false,
     saveUninitialized: false,
     cookie: {
