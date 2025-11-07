@@ -1,7 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from "@tailwindcss/vite"
-import obfuscator from "vite-plugin-javascript-obfuscator"
+import obfuscator from "javascript-obfuscator";
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -11,17 +11,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       tailwindcss(),
-      obfuscator({
-        apply: "build",
-        exclude: ["node_modules/**"],
-        options: {
-          identifierNamesGenerator: "hexadecimal",
-          stringArray: true,
-          stringArrayThreshold: 1,
-          compact: true,
-          controlFlowFlattening: false
-        },
-      }),
+      obfuscatorPlugin()
     ],
     server: {
       proxy: {
@@ -94,3 +84,43 @@ export default defineConfig(({ mode }) => {
     }
   }
 })
+
+function obfuscatorPlugin() {
+  return {
+    name: "obfuscate-all-plugin",
+    apply: "build",
+    generateBundle(_options, bundle) {
+      for (const [fileName, chunkOrAsset] of Object.entries(bundle)) {
+        if (chunkOrAsset.type === "chunk" && fileName.endsWith(".js")) {
+          try {
+            const originalCode = chunkOrAsset.code;
+
+            const obfuscated = obfuscator.obfuscate(
+              originalCode,
+              {
+                identifierNamesGenerator: "hexadecimal",
+                compact: true,
+                controlFlowFlattening: true,
+                controlFlowFlatteningThreshold: 0.75,
+                deadCodeInjection: true,
+                deadCodeInjectionThreshold: 0.4,
+                disableConsoleOutput: true,
+                rotateStringArray: true,
+                selfDefending: true,
+                stringArray: true,
+                stringArrayEncoding: ["base64"],
+                stringArrayThreshold: 0.75,
+                transformObjectKeys: true,
+              },
+            );
+
+            chunkOrAsset.code = obfuscated.getObfuscatedCode();
+          } catch (err) {
+            this.warn(`[obfuscate] failed to obfuscate ${fileName}: ${err}`);
+            chunkOrAsset.code = chunkOrAsset.code;
+          }
+        }
+      }
+    },
+  }
+}
