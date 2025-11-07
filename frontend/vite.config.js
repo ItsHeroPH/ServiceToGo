@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       obfuscator({
         apply: "build",
+        exclude: ["node_modules/**"],
         options: {
           identifierNamesGenerator: "hexadecimal",
           compact: true,
