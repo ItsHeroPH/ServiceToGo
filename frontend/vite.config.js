@@ -35,12 +35,12 @@ export default defineConfig(({ mode }) => {
       proxy: {
         "/api" : {
           target: env.VITE_API_URL,
-          changeOrigin: true,
+          changeOrigin: false,
           rewrite: path => path.replace(/^\/api/, "")
         },
         "/socket.io": {
           target: env.VITE_API_URL,
-          changeOrigin: true,
+          changeOrigin: false,
           ws: true,
         }
       },
