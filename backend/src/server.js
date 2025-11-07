@@ -58,26 +58,6 @@ app.use(passport.session());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-
-  try {
-    const allowedOrigin = new URL(process.env.FRONTEND_URL).origin;
-    if (!origin || new URL(origin).origin !== allowedOrigin) {
-      return res.status(403).send("Unauthorized Access");
-    }
-
-    res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
-    res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    
-    next();
-  } catch (err) {
-    return res.status(403).send("Invalid Request");
-  }
-});
-
 app.post("/login", async (req, res, next) => {
     if(req.isAuthenticated()) return res.json({ status: 409, message: "Already Authenticated!"});
 
