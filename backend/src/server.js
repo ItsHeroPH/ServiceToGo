@@ -56,7 +56,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
-    logger.info("Session", req.headers.origin)
+    if(req.headers.origin !== process.env.FRONTEND_URL) return res.status(401).send("Unauthorized Access!");
 
     next()
 })
