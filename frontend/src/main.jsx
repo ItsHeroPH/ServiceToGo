@@ -73,7 +73,7 @@ const router = createBrowserRouter([
       const userFetch = await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true });
       if(userFetch.data.status == 409) return redirect("/login");
       
-      const userListFetch = await axios.get(`api/users`, { withCredentials: true });
+      const userListFetch = await axios.get(`${import.meta.env.VITE_API_URL}/users`, { withCredentials: true });
       const users = userListFetch.data.users;
 
       const messagePromises = users.map(async (u) => {
