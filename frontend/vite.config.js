@@ -7,9 +7,27 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "")
 
   return {
-      plugins: [
+    plugins: [
       react(),
-      tailwindcss()
+      tailwindcss(),
+      obfuscatorPlugin({
+        apply: "build",
+        options: {
+          compact: true,
+          controlFlowFlattening: true,
+          deadCodeInjection: true,
+          deadCodeInjectionThreshold: 0.3,
+          disableConsoleOutput: true,
+          identifierNamesGenerator: "hexadecimal",
+          rotateStringArray: true,
+          selfDefending: true,
+          stringArray: true,
+          stringArrayEncoding: ["base64"],
+          stringArrayThreshold: 0.75,
+          transformObjectKeys: true,
+          unicodeEscapeSequence: false,
+        },
+      }),
     ],
     server: {
       proxy: {
@@ -50,27 +68,35 @@ export default defineConfig(({ mode }) => {
     build: {
       modulePreload: true,
       minify: "terser",
-      target: "esnext",
+      target: "es2018",
       cssCodeSplit: true,
-      cssMinify: "lightningcss",
       rollupOptions: {
         output: {
           manualChunks: (id) => {
-            if (id.includes('node_modules')) {
-              const parts = id.split('node_modules/')[1].split('/');
-              return parts[0];
+            if (id.includes("node_modules")) {
+              const match = id.match(/node_modules\/(@?[^\/]+)/);
+              return match ? match[1] : "vendor";
             }
           },
           assetFileNames: (assetInfo) => {
-            if (/\.(gif|jpe?g|png|svg|webp|avif)$/.test(assetInfo.name ?? "")) {
-              return "assets/img/[name]-[hash][extname]";
+            const name = assetInfo.name ?? "";
+            if (name.match(/\.(gif|jpe?g|png|svg|webp|avif)$/)) {
+              return "assets/img/[hash][extname]";
             }
-            return "assets/[name]-[hash][extname]";
+
+            if (name.endsWith(".css")) {
+              return "assets/css/[hash][extname]";
+            }
+
+            return "assets/[hash][extname]";
           },
           chunkFileNames: "assets/scripts/[hash].js",
           entryFileNames: "assets/scripts/[hash].js",
-        }
-      }
+        },
+      },
+    },
+    css: {
+      transformer: "lightningcss", // proper placement
     }
   }
 })
