@@ -35,9 +35,22 @@ app.use(express.urlencoded({ extended: false }));
 app.use(session({ secret: process.env.SESSION_SECRET_KEY, resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cors({ origin: [process.env.FRONTEND_URL], credentials: true }));
+app.use(cors({ 
+    origin: [process.env.FRONTEND_URL], 
+    methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+    allowedHeaders: ['Content-Type','Authorization'],
+    credentials: false
+ }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use((req, res, next) => {
+  const origin = req.get('origin') || req.get('referer');
+  if (origin && !origin.startsWith(`${process.env.FRONTEND_URL}`)) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  next();
+});
 
 app.post("/login", async (req, res, next) => {
     if(req.isAuthenticated()) return res.json({ status: 409, message: "Already Authenticated!"});
