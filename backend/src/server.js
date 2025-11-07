@@ -34,7 +34,17 @@ initializePassport(passport)
 app.use(express.urlencoded({ extended: false }));
 app.use(session({ secret: process.env.SESSION_SECRET_KEY, resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        domain: process.env.FRONTEND_URL,
+    }
+}));
 app.use(cors({ 
     origin: process.env.FRONTEND_URL, 
     methods: ['GET','POST','PUT','DELETE','OPTIONS'],
