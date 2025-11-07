@@ -31,6 +31,7 @@ mongoose.connect(process.env.MONGODB_URL, {
   .catch(err => logger.error("MongoDB", err));
 
 initializePassport(passport)
+app.set("trust proxy", 1);
 app.use(express.urlencoded({ extended: false }));
 app.use(cors({ 
     origin: process.env.FRONTEND_URL, 
