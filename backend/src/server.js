@@ -47,10 +47,6 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        domain: process.env.FRONTEND_DOMAIN,
         maxAge: 60000 * 60 * 24
     }
 }));
