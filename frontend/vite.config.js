@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => {
           stringArray: true,
           stringArrayEncoding: ["base64"],
           stringArrayThreshold: 0.75,
-          transformObjectKeys: true,
+          transformObjectKeys: false,
           unicodeEscapeSequence: false
         },
       }),
