@@ -98,19 +98,18 @@ function obfuscatorPlugin() {
             const obfuscated = obfuscator.obfuscate(
               originalCode,
               {
-                identifierNamesGenerator: "hexadecimal",
                 compact: true,
-                controlFlowFlattening: true,
-                controlFlowFlatteningThreshold: 0.75,
-                deadCodeInjection: true,
-                deadCodeInjectionThreshold: 0.4,
-                disableConsoleOutput: true,
-                rotateStringArray: true,
-                selfDefending: true,
+                controlFlowFlattening: false,
+                deadCodeInjection: false,
                 stringArray: true,
                 stringArrayEncoding: ["base64"],
-                stringArrayThreshold: 0.75,
+                rotateStringArray: true,
+                stringArrayThreshold: 0.5,
+                disableConsoleOutput: true,
+                simplify: true,
                 transformObjectKeys: true,
+                numbersToExpressions: false,
+                selfDefending: false,
               },
             );
 
