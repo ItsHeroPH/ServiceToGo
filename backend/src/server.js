@@ -1,7 +1,8 @@
-import express from "express"
-import session from "express-session"
-import http from "http"
-import passport from "passport"
+import express from "express";
+import session from "express-session";
+import cookieParser from "cookie-parser";
+import http from "http";
+import passport from "passport";
 import logger from "./util/logger.js";
 import mongoose from "mongoose";
 import ConnectMongo from "connect-mongo";
@@ -33,7 +34,7 @@ mongoose.connect(process.env.MONGODB_URL, {
 
 initializePassport(passport)
 app.set("trust proxy", 1);
-app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser())
 app.use(cors({ 
     origin: process.env.FRONTEND_URL, 
     methods: ['GET','POST','PUT','DELETE','OPTIONS'],

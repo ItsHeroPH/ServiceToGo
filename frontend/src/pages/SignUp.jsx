@@ -54,9 +54,9 @@ export default function Login() {
                                         if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
                                             const response1 = await (await axios.post(`${import.meta.env.VITE_API_URL}/register`, {email, password, username}, { withCredentials: true })).data
 
-                                            if(response1.status == 201) {
+                                            if(response1.status === 201) {
                                                 const response2 = await (await axios.post(`${import.meta.env.VITE_API_URL}/login`, { email, password }, { withCredentials: true })).data
-                                                if(response2.status == 200) return navigate("/home");                                               
+                                                if(response2.status === 200) return navigate("/home");                                               
                                             } else {
                                                 setHasError(true)
                                                 setError(response1.message)
