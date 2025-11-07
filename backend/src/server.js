@@ -32,7 +32,7 @@ mongoose.connect(process.env.MONGODB_URL, {
 
 initializePassport(passport)
 app.use(express.urlencoded({ extended: false }));
-app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
+app.use(session({ secret: process.env.SESSION_SECRET_KEY, resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cors({ origin: [process.env.FRONTEND_URL], credentials: true }));
@@ -134,20 +134,18 @@ app.get("/message/:userId", async (req, res) => {
     });
 
     return res.json({ status: 200, messages: messages.map((msg) => 
-        { return { id: msg.id, from: msg.fromUser, to: msg.toUser, message: Crypto.AES.decrypt(msg.message, process.env.MESSAGE_SECRET_KEY).toString(Crypto.enc.Utf8), createdAt: msg.createdAt }}
+        { return { id: msg.id, from: msg.fromUser, to: msg.toUser, message: Crypto.AES.decrypt(msg.message, process.env.SECRET_KEY).toString(Crypto.enc.Utf8), createdAt: msg.createdAt }}
     ) })
 })
 
 io.on("connection", (socket) => {
-
     socket.on("join_message", (userId) => socket.join(userId))
 
     socket.on("send_message", async (data) => {
         const { from, to, message } = data;
-        const msg = new Message({ fromUser: from, toUser: to, message: Crypto.AES.encrypt(message, process.env.MESSAGE_SECRET_KEY).toString() });
+        const msg = new Message({ fromUser: from, toUser: to, message: Crypto.AES.encrypt(message, process.env.SECRET_KEY).toString() });
         await msg.save();
 
-        
         logger.info("MESSENGER", `User ${from} sent a message to ${to}.`);
 
         const msgData = { id: msg.id, from: msg.fromUser, to: msg.toUser, message: message, createdAt: msg.createdAt }

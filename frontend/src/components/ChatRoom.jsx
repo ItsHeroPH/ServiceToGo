@@ -1,9 +1,11 @@
-import { faPaperPlane } from "@fortawesome/free-solid-svg-icons"
-import profile from "../assets/blank_profile.png"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import ChatBubble from "./ChatBubble"
-import { useLoaderData } from "react-router-dom"
-import { useEffect, useRef, useState } from "react"
+import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import profile from "../assets/blank_profile.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useLoaderData } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { lazy } from "react";
+
+const ChatBubble = lazy(() => import("./ChatBubble"));
 
 export default function ChatRoom({ user: currentUser, message, messages, onMessageChange, onMessageSent }) {
     const { user } = useLoaderData();

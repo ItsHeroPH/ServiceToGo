@@ -1,5 +1,7 @@
+import { lazy } from "react";
 import { useLoaderData } from "react-router-dom";
-import Navigation from "../components/Navigation";
+
+const Navigation = lazy(() => import("../components/Navigation"));
 
 export default function Home() {
     const { user } = useLoaderData();

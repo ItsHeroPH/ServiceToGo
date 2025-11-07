@@ -1,14 +1,14 @@
-import { useLoaderData, useNavigate } from "react-router-dom"
-import logo from "../assets/logo.png"
-
-import UserNav from "../components/UserNav";
+import { useLoaderData, useNavigate } from "react-router-dom";
+import logo from "../assets/logo.png";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
-import ChatSideBar from "../components/ChatSideBar";
-import ChatRoom from "../components/ChatRoom";
-import axios from "axios";
 import { io } from "socket.io-client";
+import { lazy } from "react";
+
+const UserNav = lazy(() => import("../components/UserNav"));
+const ChatSideBar = lazy(() => import("../components/ChatSideBar"));
+const ChatRoom = lazy(() => import("../components/ChatRoom"));
 
 const socket = io("/", { withCredentials: true });
 

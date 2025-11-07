@@ -2,7 +2,10 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import logo from "../assets/logo.png"
 import { useNavigate } from "react-router-dom";
-import UserNav from "./UserNav";
+import { lazy } from "react";
+
+
+const UserNav = lazy(() => import("./UserNav"));
 
 export default function Navigation({ user }) {
     const navigate = useNavigate();

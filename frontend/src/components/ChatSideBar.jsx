@@ -1,5 +1,5 @@
-import profile from "../assets/blank_profile.png"
-import { formatDate } from "../util/ChatDateFormatter"
+import profile from "../assets/blank_profile.png";
+import { formatDate } from "../util/ChatDateFormatter";
 
 export default function ChatSideBar({ users, latestMessages, showSidebar, onSelectUser }) {
     return (
