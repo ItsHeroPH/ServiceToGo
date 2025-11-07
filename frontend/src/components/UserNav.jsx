@@ -26,11 +26,11 @@ export default function UserNav({ user }) {
                     return navigate("/chats")
                 }}>Chats</Link>
                 <Link onClick={async() => {
-                    const response = (await axios.get("/api/user/delete")).data
+                    const response = (await axios.get(`${import.meta.env.VITE_API_URL}/user/delete`)).data
                     if(response.status == 200) return navigate("/login")
                 }}>Delete Account</Link>
                 <Link onClick={async() => {
-                    const response = (await axios.get("/api/logout")).data
+                    const response = (await axios.get(`${import.meta.env.VITE_API_URL}/logout`)).data
                     if(response.status == 200) return navigate("/login")
                 }}>Logout</Link>
             </div>

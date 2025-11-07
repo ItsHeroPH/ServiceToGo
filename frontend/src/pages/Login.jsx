@@ -44,7 +44,7 @@ export default function Login() {
                                 async () => {
                                     if(email.length > 0 && password.length > 0) {
                                         if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                                            const response = await (await axios.post("/api/login", { email, password }, { withCredentials: true })).data
+                                            const response = await (await axios.post(`${import.meta.env.VITE_API_URL}/login`, { email, password }, { withCredentials: true })).data
                                             if(response.status == 200) {
                                                 return navigate("/home");
                                             } else {

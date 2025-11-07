@@ -27,7 +27,7 @@ const router = createBrowserRouter([
       </Suspense>
     ),
     loader: async () => {
-      const userFetch = await axios.get(`/api/user`, { withCredentials: true });
+      const userFetch = await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true });
       if(userFetch.data.status == 409) return redirect("/login");
       return { user: userFetch.data.user }
     }
@@ -42,7 +42,7 @@ const router = createBrowserRouter([
       </Suspense>
     ),
     loader: async () => {
-      const userFetch = (await axios.get(`/api/user`, { withCredentials: true })).data;
+      const userFetch = (await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true })).data;
       if(userFetch.status == 200) return redirect("/");
     }
   },
@@ -56,7 +56,7 @@ const router = createBrowserRouter([
       </Suspense>
     ),
     loader: async () => {
-      const userFetch = (await axios.get(`/api/user`, { withCredentials: true })).data;
+      const userFetch = (await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true })).data;
       if(userFetch.status == 200) return redirect("/");
     }
   },
@@ -70,14 +70,14 @@ const router = createBrowserRouter([
       </Suspense>
     ),
     loader: async () => {
-      const userFetch = await axios.get(`/api/user`, { withCredentials: true });
+      const userFetch = await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true });
       if(userFetch.data.status == 409) return redirect("/login");
       
       const userListFetch = await axios.get(`api/users`, { withCredentials: true });
       const users = userListFetch.data.users;
 
       const messagePromises = users.map(async (u) => {
-          const res = await axios.get(`/api/message/${u.id}`, { withCredentials: true });
+          const res = await axios.get(`${import.meta.env.VITE_API_URL}/message/${u.id}`, { withCredentials: true });
           if (res.data.status === 200) {
               const sorted = [...res.data.messages].sort(
                   (a, b) => new Date(a.createdAt) - new Date(b.createdAt)

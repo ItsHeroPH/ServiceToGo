@@ -52,10 +52,10 @@ export default function Login() {
                                 async () => {
                                     if(email.length > 0 && password.length > 0 && username.length > 0) {
                                         if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                                            const response1 = await (await axios.post("/api/register", {email, password, username}, { withCredentials: true })).data
+                                            const response1 = await (await axios.post(`${import.meta.env.VITE_API_URL}/register`, {email, password, username}, { withCredentials: true })).data
 
                                             if(response1.status == 201) {
-                                                const response2 = await (await axios.post("/api/login", { email, password }, { withCredentials: true })).data
+                                                const response2 = await (await axios.post(`${import.meta.env.VITE_API_URL}/login`, { email, password }, { withCredentials: true })).data
                                                 if(response2.status == 200) return navigate("/home");                                               
                                             } else {
                                                 setHasError(true)

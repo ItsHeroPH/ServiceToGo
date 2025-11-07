@@ -10,7 +10,7 @@ const UserNav = lazy(() => import("../components/UserNav"));
 const ChatSideBar = lazy(() => import("../components/ChatSideBar"));
 const ChatRoom = lazy(() => import("../components/ChatRoom"));
 
-const socket = io("/", { withCredentials: true });
+const socket = io(`${import.meta.env.VITE_API_URL}`, { withCredentials: true });
 
 export default function Chats() {
     const navigate = useNavigate();
