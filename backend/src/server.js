@@ -32,6 +32,12 @@ mongoose.connect(process.env.MONGODB_URL, {
 
 initializePassport(passport)
 app.use(express.urlencoded({ extended: false }));
+app.use(cors({ 
+    origin: process.env.FRONTEND_URL, 
+    methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+    allowedHeaders: ['Content-Type','Authorization'],
+    credentials: true
+}));
 app.use(session({
     secret: process.env.SESSION_SECRET_KEY,
     resave: false,
@@ -45,12 +51,6 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cors({ 
-    origin: process.env.FRONTEND_URL, 
-    methods: ['GET','POST','PUT','DELETE','OPTIONS'],
-    allowedHeaders: ['Content-Type','Authorization'],
-    credentials: true
- }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
