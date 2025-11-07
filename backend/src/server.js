@@ -40,7 +40,7 @@ app.use(session({
         httpOnly: true,
         secure: true,
         sameSite: "none",
-        domain: process.env.FRONTEND_URL,
+        domain: process.env.FRONTEND_DOMAIN,
     }
 }));
 app.use(passport.initialize());
