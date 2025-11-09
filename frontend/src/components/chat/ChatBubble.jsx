@@ -1,4 +1,4 @@
-import profile from "../assets/blank_profile.png";
+import profile from "../../assets/blank_profile.png";
 import { formatDate } from "../../util/ChatDateFormatter";
 
 export default function ChatBubble({ user, data, isOwner }) {
