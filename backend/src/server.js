@@ -123,7 +123,7 @@ app.post("/register/send-code", async (req, res) => {
                     <td style="padding:40px 20px 20px 20px; text-align:center; position:relative;">
                         <h1 style="font-family: Arial, sans-serif; color:#F45E8E; margin:0px 0 20px 0;">Verification Code</h1>
                         <div style="background-color:#ffffff; padding:15px 0; margin:0 auto 20px auto; width:200px; border-radius:5px;">
-                            <h2 style="font-family: Arial, sans-serif; color:#F58C22; letter-spacing:5px; margin:0;">552181</h2>
+                            <h2 style="font-family: Arial, sans-serif; color:#F58C22; letter-spacing:5px; margin:0;">${otp.code}</h2>
                         </div>
                         <p style="font-family: Arial, sans-serif; color:#333; font-size:14px; margin:0;">This code will expire in 5 minutes.</p>
                     </td>
