@@ -9,7 +9,7 @@ export default function Verify({ email, onNext = ({}) => {}}) {
 
     return (
         <div className="flex flex-col gap-3">
-            <p className="text-sm text-slate-500">We sent you a 6-digits OTP to your email.</p>
+            <p className="text-sm text-slate-500">We sent you a 6-digits Verification Code to your email.</p>
             <div>
                 <label className="block text-sm font-semibold text-citrus-orange">Verification Code</label>
                 <input ref={input} className="bg-slate-200 w-full outline-none px-3 py-1.5 rounded-lg text-md text-citrus-pink font-semibold" type="text" maxLength={6} onChange={(e) => {

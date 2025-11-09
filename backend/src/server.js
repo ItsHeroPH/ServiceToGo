@@ -14,10 +14,10 @@ import Crypto from "crypto-js";
 import nodemailer from "nodemailer";
 
 import { initializePassport } from "./auth/passport.js";
+import { sendEmail } from "./util/mailer.js";
 import User from "./database/user.js";
 import OTP from "./database/otp.js";
 import Message from "./database/message.js";
-import message from "./database/message.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -34,6 +34,8 @@ mongoose.connect(process.env.MONGODB_URL, {
   useUnifiedTopology: true
 }).then(() => logger.info("MongoDB", "Connected successfully!"))
   .catch(err => logger.error("MongoDB", err));
+
+
 
 initializePassport(passport)
 app.set("trust proxy", 1);
@@ -109,6 +111,28 @@ app.post("/register/send-code", async (req, res) => {
 
     const otp = new OTP({ email });
     await otp.save();
+
+    await sendEmail(
+        email, 
+        "Verification Code",
+        `
+        <div style="width:100%; background-color:#E94857; padding:50px 0; text-align:center;">
+            <img src="https://servicetogo.store/assets/img/logo.png" alt="ServiceToGo" width="300" style="display:block; margin:0 auto; margin-top:-50px;" />
+            <table align="center" width="300" cellpadding="0" cellspacing="0" style="background-color:#FAD9C1; border-radius:10px; box-shadow:0 4px 4px rgba(0,0,0,0.15); position:relative;">
+                <tr>
+                    <td style="padding:40px 20px 20px 20px; text-align:center; position:relative;">
+                        <h1 style="font-family: Arial, sans-serif; color:#F45E8E; margin:0px 0 20px 0;">Verification Code</h1>
+                        <div style="background-color:#ffffff; padding:15px 0; margin:0 auto 20px auto; width:200px; border-radius:5px;">
+                            <h2 style="font-family: Arial, sans-serif; color:#F58C22; letter-spacing:5px; margin:0;">552181</h2>
+                        </div>
+                        <p style="font-family: Arial, sans-serif; color:#333; font-size:14px; margin:0;">This code will expire in 5 minutes.</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        `,
+        `Verification Code: ${otp.code}`
+        );
     
     return res.json({ status: 200 })
 })
