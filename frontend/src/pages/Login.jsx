@@ -33,7 +33,7 @@ export default function Login() {
                                  setPassword(e.target.value)
                                  setHasError(false)
                             }} placeholder="Password"/>
-                            <FontAwesomeIcon className="text-citrus-pink cursor-pointer" icon={showPassword ? faEye : faEyeSlash} onClick={() => setShowPassword(!showPassword)}/>
+                            <FontAwesomeIcon className="text-citrus-pink cursor-pointer" icon={showPassword ? faEye : faEyeSlash} onClick={() => setShowPassword((prev) => !prev)}/>
                         </div>
                     </div>
                     <div>

@@ -1,4 +1,4 @@
-import { faAngleUp } from "@fortawesome/free-solid-svg-icons";
+import { faAngleUp, faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import profile from "../assets/blank_profile.png";
@@ -14,13 +14,19 @@ export default function UserNav({ user }) {
         <div className="relative">
             <div className="flex flex-row items-center gap-1 cursor-pointer" onClick={() => setShowUserNav(!showUserNav)}>
                 <img className="min-w-7 max-w-7 rounded-full" src={profile}/>
-                <p className="text-md text-citrus-peach-light font-bold hidden sm:block">{user.username}</p>
+                <p className="text-md text-citrus-peach-light font-bold hidden sm:block">{user.name}</p>
                 <FontAwesomeIcon className={`text-citrus-peach-light transition-all duration-300 ${showUserNav ? "rotate-180" : "rotate-0"}`} icon={faAngleUp}/>
             </div>
-            <div className={`absolute right-0 mt-1 w-44 bg-white rounded-lg shadow-lg 
-                flex flex-col gap-4 py-2 px-3 transition-all duration-300 ease-out z-100
-                    ${showUserNav ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none" }
-                `}>
+            <div className={`bg-black/50 fixed w-[100%] h-[100%] z-99 left-0 top-0 transition-all duration-300 ease-out md:hidden md:pointer-events-none
+                ${showUserNav ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
+            `} onClick={() => setShowUserNav(false)} />
+            <div className={`fixed md:absolute right-0 md:left-auto top-0 w-70 h-screen md:w-44 md:h-fit bg-white md:rounded-lg shadow-lg 
+                flex flex-col gap-4 p-5 md:py-2 md:px-3 transition-all duration-300 ease-out z-100
+                    ${showUserNav ? "left-0 md:opacity-100 md:top-9 pointer-events-auto" : "-left-full md:opacity-0 md:top-0 pointer-events-none" }
+            `}>
+                <button className="bg-citrus-rose w-8 h-8 rounded-lg md:hidden" onClick={() => setShowUserNav(false)}>
+                    <FontAwesomeIcon className="text-citrus-peach-light rotate-180" icon={faRightToBracket}/>
+                </button>                
                 <Link>Notifications</Link>
                 <Link onClick={async() => {
                     return navigate("/chats")

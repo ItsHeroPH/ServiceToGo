@@ -7,8 +7,8 @@ import { io } from "socket.io-client";
 import { lazy } from "react";
 
 const UserNav = lazy(() => import("../components/UserNav"));
-const ChatSideBar = lazy(() => import("../components/ChatSideBar"));
-const ChatRoom = lazy(() => import("../components/ChatRoom"));
+const ChatSideBar = lazy(() => import("../components/chat/ChatSideBar"));
+const ChatRoom = lazy(() => import("../components/chat/ChatRoom"));
 
 const socket = io(`${import.meta.env.VITE_API_URL}`, { withCredentials: true });
 
@@ -22,18 +22,6 @@ export default function Chats() {
     const [messages, setMessages] = useState({});
     const [latestMessages, setLatestMessages] = useState({});
     const [usersList, setUsersList] = useState(users);
-
-    const handleNewMessage = (data) => {
-        const userId = data.from === user.id ? data.to : data.from;
-        setMessages((prev) => ({...prev, [userId]: [...(prev[userId] || []), data]}));
-        setLatestMessages((prev) => ({...prev, [userId]: data }));
-        setUsersList((prev) => {
-            const activeUser = prev.find((u) => u.id === userId);
-            if (!activeUser) return prev;
-            const otherUsers = prev.filter((u) => u.id !== userId);
-            return [activeUser, ...otherUsers];
-        });
-    };
 
     useEffect(() => {
         const msgMap = {};
@@ -64,7 +52,15 @@ export default function Chats() {
 
     useEffect(() => {
         socket.on("receive_message", (data) => {
-            handleNewMessage(data);
+            const userId = data.from === user.id ? data.to : data.from;
+            setMessages((prev) => ({...prev, [userId]: [...(prev[userId] || []), data]}));
+            setLatestMessages((prev) => ({...prev, [userId]: data }));
+            setUsersList((prev) => {
+                const activeUser = prev.find((u) => u.id === userId);
+                if (!activeUser) return prev;
+                const otherUsers = prev.filter((u) => u.id !== userId);
+                return [activeUser, ...otherUsers];
+            });
         });
 
         return () => socket.off("receive_message");

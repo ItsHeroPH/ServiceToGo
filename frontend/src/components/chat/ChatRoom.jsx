@@ -1,5 +1,5 @@
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
-import profile from "../assets/blank_profile.png";
+import profile from "../../assets/blank_profile.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useLoaderData } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
@@ -39,7 +39,7 @@ export default function ChatRoom({ user: currentUser, message, messages, onMessa
                     <div className="w-full h-14 shadow-xl p-2">
                         <div className="h-full flex items-center gap-2">
                             <img className="min-w-7 w-7 rounded-full" src={profile}/>
-                            <h1 className="text-lg text-citrus-rose font-bold">{currentUser.username}</h1>
+                            <h1 className="text-lg text-citrus-rose font-bold">{currentUser.name}</h1>
                         </div>
                     </div>
                     <div ref={containerRef} className="w-full h-full p-3 overflow-y-scroll flex flex-col items-center gap-2 no-scrollbar">

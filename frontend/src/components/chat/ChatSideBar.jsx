@@ -1,5 +1,5 @@
-import profile from "../assets/blank_profile.png";
-import { formatDate } from "../util/ChatDateFormatter";
+import profile from "../../assets/blank_profile.png";
+import { formatDate } from "../../util/ChatDateFormatter";
 
 export default function ChatSideBar({ users, latestMessages, showSidebar, onSelectUser }) {
     return (
@@ -21,7 +21,7 @@ function User({ user, onSelectUser, latestMessage }) {
         <div className="w-full h-15 flex flex-row items-center gap-2 cursor-pointer" onClick={() => onSelectUser(user)}>
             <img className="min-w-10 w-10 max-w-10 rounded-full" src={profile}/>
             <div className="w-full max-h-full flex flex-col overflow-hidden">
-                <h1 className="text-lg text-citrus-orange font-bold truncate">{user.username}</h1>
+                <h1 className="text-lg text-citrus-orange font-bold truncate">{user.name}</h1>
                 <div className="flex gap-1">
                     <p className="text-xs text-slate-500 whitespace-normal overflow-hidden break-all text-ellipsis line-clamp-1">{latestMessage ? `${latestMessage.from === user.id ? user.username : "You"}: ${latestMessage.message}` : "No messages yet"}</p>
                     {

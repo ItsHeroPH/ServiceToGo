@@ -65,7 +65,7 @@ export default defineConfig(({ mode }) => {
           assetFileNames: (assetInfo) => {
             const name = assetInfo.name ?? "";
             if (name.match(/\.(gif|jpe?g|png|svg|webp|avif)$/)) {
-              return "assets/img/[hash][extname]";
+              return "assets/img/[name][extname]";
             }
 
             if (name.endsWith(".css")) {

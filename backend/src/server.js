@@ -11,10 +11,13 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { Server } from "socket.io";
 import Crypto from "crypto-js";
+import nodemailer from "nodemailer";
 
 import { initializePassport } from "./auth/passport.js";
-import User from "./database/user.js"
+import User from "./database/user.js";
+import OTP from "./database/otp.js";
 import Message from "./database/message.js";
+import message from "./database/message.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -77,17 +80,48 @@ app.post("/login", async (req, res, next) => {
 })
 
 app.post("/register", async (req, res) => {
-    const { email, password, username } = req.body;
+    const { email, password, name, address } = req.body;
 
     const existing = await User.findOne({ email });
     if(existing) return res.json({ status: 409, message: "Email already exists!" });
 
-    const hashed = await bcrypt.hash(password, 10);
-    const user = new User({ email, username, password: hashed });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({ email, name, password: hashedPassword, address });
     await user.save();
 
     logger.info("AUTHENTICATOR", "A new user registered: " + user.id);
     res.json({ status: 201, message: "User registered successfully!" });
+})
+
+app.post("/register/check-email", async(req, res) => {
+    const { email } = req.body;
+    const existing = await User.findOne({ email });
+    if(existing) return res.json({ status: 409, message: "Email already exists!" });
+
+    return res.json({ status: 200, message: "Email is not exists!" })
+})
+
+app.post("/register/send-code", async (req, res) => {
+    const { email } = req.body;
+
+    const existing = await OTP.findOne({ email });
+    if(existing) await OTP.deleteOne({ email });
+
+    const otp = new OTP({ email });
+    await otp.save();
+    
+    return res.json({ status: 200 })
+})
+
+app.post("/register/verify", async (req, res) => {
+    const { email, code } = req.body;
+    const existing = await OTP.findOne({ email, code });
+    if(!existing) return res.json({ status: 400, message: "Invalid OTP!" });
+
+    if(existing.expiresAt < new Date()) return res.json({ stats: 400, message: "OTP expired!"});
+    await OTP.deleteOne({ email, code });
+
+    return res.json({ status: 200, message: "OTP verified successfully" });
 })
 
 app.get("/logout", async (req, res, next) => {
@@ -108,7 +142,7 @@ app.get("/user", async (req, res) => {
     res.json({ status: 200, user: {
         id: req.user.id,
         email: req.user.email,
-        username: req.user.username
+        name: req.user.name
     } })
 })
 
@@ -139,7 +173,7 @@ app.get("/users", async (req, res) => {
 
     const users = await User.find({});
 
-    return res.json({ status: 200, users: users.filter((user) => user.id != req.user.id).map((user) => { return { id: user.id, username: user.username } })})
+    return res.json({ status: 200, users: users.filter((user) => user.id != req.user.id).map((user) => { return { id: user.id, name: user.name } })})
 })
 
 app.get("/message/:userId", async (req, res) => {
