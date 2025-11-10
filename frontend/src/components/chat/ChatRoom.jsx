@@ -50,7 +50,7 @@ export default function ChatRoom({ user: currentUser, message, messages, onMessa
                     </div>
                     <div className="w-full min-h-13 max-h-30 rounded-b-lg inset-shadow-sm px-3 py-2 flex flex-row items-center gap-2">
                         <textarea className="bg-slate-100 w-full min-h-10 h-10 max-h-full px-2 py-1.5 rounded-xl outline-none text-lg text-citrus-orange font-semibold"
-                            placeholder={`Say something for ${user.username}`} onChange={(e) => onMessageChange(e.target.value)} value={message}></textarea>
+                            placeholder={`Say something for ${user.name}`} onChange={(e) => onMessageChange(e.target.value)} value={message}></textarea>
                         <button className="px-2 text-lg text-citrus-rose cursor-pointer" onClick={() => onMessageSent()}>
                             <FontAwesomeIcon icon={faPaperPlane}/>
                         </button>

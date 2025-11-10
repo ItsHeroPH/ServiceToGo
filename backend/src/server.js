@@ -132,7 +132,7 @@ app.post("/register/send-code", async (req, res) => {
         <body>
             <div style="width:100%; text-align:center;">
                 <img src="cid:logo" width="200" alt="ServiceToGo">
-                <table>
+                <table style="justify-self: center;">
                     <tr>
                         <td style="text-align:left; position:relative;">
                             <h1 style="font-family: Arial, sans-serif; color:#F45E8E !important;">Verification Code</h1>
