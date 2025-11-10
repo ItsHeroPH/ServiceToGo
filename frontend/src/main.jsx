@@ -13,6 +13,10 @@ const Chats = lazy(() => import("./pages/Chats"))
 const router = createBrowserRouter([
   {
     path: "/",
+    element: (
+      <LoadingScreen/>
+    ),
+    HydrateFallback: () => <LoadingScreen/>,
     loader: async() => {
       return redirect("/home")
     }
@@ -26,6 +30,7 @@ const router = createBrowserRouter([
         <Home />
       </Suspense>
     ),
+    HydrateFallback: () => <LoadingScreen/>,
     loader: async () => {
       const userFetch = await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true });
       if(userFetch.data.status == 409) return redirect("/login");
@@ -41,6 +46,7 @@ const router = createBrowserRouter([
         <Login />
       </Suspense>
     ),
+    HydrateFallback: () => <LoadingScreen/>,
     loader: async () => {
       const userFetch = (await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true })).data;
       if(userFetch.status == 200) return redirect("/");
@@ -55,6 +61,7 @@ const router = createBrowserRouter([
         <SignUp />
       </Suspense>
     ),
+    HydrateFallback: () => <LoadingScreen/>,
     loader: async () => {
       const userFetch = (await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true })).data;
       if(userFetch.status == 200) return redirect("/");
@@ -69,6 +76,7 @@ const router = createBrowserRouter([
         <Chats />
       </Suspense>
     ),
+    HydrateFallback: () => <LoadingScreen/>,
     loader: async () => {
       const userFetch = await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true });
       if(userFetch.data.status == 409) return redirect("/login");

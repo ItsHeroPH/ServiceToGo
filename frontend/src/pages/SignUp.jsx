@@ -1,15 +1,14 @@
 import { useState } from "react";
 import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
-import { lazy } from "react";
 import axios from "axios";
 
-const Progress = lazy(() => import("../components/signup/Progress"));
-const Email = lazy(() => import("../components/signup/Email"));
-const Verify = lazy(() => import("../components/signup/Verify"));
-const Password = lazy(() => import("../components/signup/Password"));
-const Info = lazy(() => import("../components/signup/Info"));
-const Done = lazy(() => import("../components/signup/Done"))
+import Progress from "../components/signup/Progress";
+import Email from "../components/signup/Email";
+import Verify from "../components/signup/Verify";
+import Password from "../components/signup/Password";
+import Info from "../components/signup/Info";
+import Done from "../components/signup/Done";
 
 export default function Login() {
     const navigate = useNavigate();
