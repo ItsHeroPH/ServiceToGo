@@ -32,6 +32,8 @@ export function initializePassport(passport) {
                 id: user.id,
                 email: decrypt(user.email),
                 name: decrypt(user.name),
+                username: decrypt(user.username),
+                birthday: decrypt(user.birthday)
             }
             done(null, decryptedUser)
         } catch(err) {

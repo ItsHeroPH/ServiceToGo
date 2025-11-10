@@ -37,9 +37,9 @@ export default function Email({ onNext = ({}) => {}}) {
             <button className={`${isValid ? "bg-citrus-rose cursor-pointer transition-all duration-500 hover:text-rose-300 hover:scale-105 hover:shadow-lg" : "bg-citrus-rose/50"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
                 onClick={async() => {
                     if(isValid) {
-                        const response = (await axios.post(`${import.meta.env.VITE_API_URL}/register/check-email`, { email }, { withCredentials: true })).data;
+                        const response = (await axios.post(`${import.meta.env.VITE_API_URL}/register`, { email }, { withCredentials: true })).data;
 
-                        if(response.status == 200) {
+                        if(response.status == 422) {
                             onNext({ email })
                         } else {
                             setHasError(true)

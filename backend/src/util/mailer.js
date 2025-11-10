@@ -1,9 +1,4 @@
 import nodemailer from "nodemailer";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
@@ -24,13 +19,6 @@ export function sendEmail(to, subject, html, text) {
         to,
         subject,
         html,
-        text,
-        attachments: [
-            {
-                filename: "logo.png",
-                path: path.join(__dirname, "../assets/logo.png"),
-                cid: "logo"
-            }
-        ]
+        text
     })
 }

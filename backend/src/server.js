@@ -80,36 +80,34 @@ app.post("/login", async (req, res, next) => {
 })
 
 app.post("/register", async (req, res) => {
-    const { email, password, name, address } = req.body;
+    const { email, password, username, name, gender, birthday } = req.body;
 
     const encryptedEmail = encrypt(email)
     const existing = await User.findOne({ email: encryptedEmail });
     if(existing) return res.json({ status: 409, message: "Email already exists!" });
 
+    if(!password && !username && !name && !gender && !birthday) return res.json({ status: 422, message: "Fields is not complete" });
+
     const encryptedPassword = encrypt(password)
+    const encryptedUsername = encrypt(username);
     const encryptedName = encrypt(name);
-    const encryptedAddress = {
-        region: encrypt(address.region),
-        city: encrypt(address.city),
-        barangay: encrypt(address.barangay),
-        address: encrypt(address.address)
-    }
-    const user = new User({ email: encryptedEmail, name: encryptedName, password: encryptedPassword, address: encryptedAddress });
+    const encryptedGender = encrypt(gender);
+    const encryptedBirthday = encrypt(birthday);
+    const user = new User({ 
+        email: encryptedEmail,
+        username: encryptedUsername, 
+        name: encryptedName, 
+        password: encryptedPassword, 
+        gender: encryptedGender,
+        birthday: encryptedBirthday
+    });
     await user.save();
 
     logger.info("AUTHENTICATOR", "A new user registered: " + user.id);
     res.json({ status: 201, message: "User registered successfully!" });
 })
 
-app.post("/register/check-email", async(req, res) => {
-    const { email } = req.body;
-    const existing = await User.findOne({ email: encrypt(email) });
-    if(existing) return res.json({ status: 409, message: "Email already exists!" });
-
-    return res.json({ status: 200, message: "Email is not exists!" })
-})
-
-app.post("/register/send-code", async (req, res) => {
+app.post("/send-code", async (req, res) => {
     const { email } = req.body;
 
     const encryptedEmail = encrypt(email);
@@ -125,27 +123,27 @@ app.post("/register/send-code", async (req, res) => {
         `
         <!DOCTYPE html>
         <html>
-        <head>
-        <meta name="color-scheme" content="light">
-        <meta name="supported-color-schemes" content="light">
-        </head>
-        <body>
-            <div style="width:100%; text-align:center;">
-                <img src="cid:logo" width="200" alt="ServiceToGo">
-                <table style="justify-self: center;">
-                    <tr>
-                        <td style="text-align:left; position:relative;">
-                            <h1 style="font-family: Arial, sans-serif; color:#F45E8E !important;">Verification Code</h1>
-                            <h3>Please confirm your registration request</h3>
-                            <p>To verify your account, please use the following code to confirm your registration request. This code will expire in 5 minutes.</p>
-                            <div style="background-color:#E7E6F0 !important; padding:15px 0; width: 100%; border-radius:5px; text-align: center;">
-                                <h2 style="font-family: Arial, sans-serif; color:#F58C22 !important; letter-spacing:5px; margin:0;">${decrypt(otp.code)}</h2>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </body>
+            <head>
+                <meta name="color-scheme" content="light">
+                <meta name="supported-color-schemes" content="light">
+            </head>
+            <body>
+                <div style="width:100%; text-align:center;">
+                    <img src="https://servicetogo.store/assets/img/logo2.png" width="200" alt="ServiceToGo">
+                    <table style="justify-self: center;">
+                        <tr>
+                            <td style="text-align:left; position:relative;">
+                                <h1 style="font-family: Arial, sans-serif; color:#F45E8E !important;">Verification Code</h1>
+                                <h3>Please confirm your request</h3>
+                                <p>For verification of your request, please use the following code below. This code will expire in 5 minutes.</p>
+                                <div style="background-color:#E7E6F0 !important; padding:15px 0; width: 100%; border-radius:5px; text-align: center;">
+                                    <h2 style="font-family: Arial, sans-serif; color:#F58C22 !important; letter-spacing:5px; margin:0;">${decrypt(otp.code)}</h2>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </body>
         </html>
         `,
         `Verification Code: ${decrypt(otp.code)}`
@@ -154,18 +152,18 @@ app.post("/register/send-code", async (req, res) => {
     return res.json({ status: 200 })
 })
 
-app.post("/register/verify", async (req, res) => {
+app.post("/verify", async (req, res) => {
     const { email, code } = req.body;
 
     const encryptedEmail = encrypt(email);
     const encryptedCode = encrypt(code);
     const existing = await OTP.findOne({ email: encryptedEmail, code: encryptedCode });
     if(!existing) return res.json({ status: 400, message: "Invalid OTP!" });
-
-    if(existing.expiresAt < new Date()) return res.json({ stats: 400, message: "OTP expired!"});
+    
+    if(existing.expiresAt < new Date()) return res.json({ status: 400, message: "OTP expired!"});
     await OTP.deleteOne({ email: encryptedEmail, code: encryptedCode });
 
-    return res.json({ status: 200, message: "OTP verified successfully" });
+    return res.json({ status: 200 });
 })
 
 app.get("/logout", async (req, res, next) => {
@@ -186,6 +184,7 @@ app.get("/user", async (req, res) => {
     res.json({ status: 200, user: {
         id: req.user.id,
         email: req.user.email,
+        username: req.user.username,
         name: req.user.name
     } })
 })
@@ -236,6 +235,12 @@ app.get("/message/:userId", async (req, res) => {
     return res.json({ status: 200, messages: messages.map((msg) => 
         { return { id: msg.id, from: msg.fromUser, to: msg.toUser, message: decrypt(msg.message), createdAt: msg.createdAt }}
     ) })
+})
+
+app.post("/upload", async (req, res) => {
+    const { filename, data } = req.body;
+
+    
 })
 
 io.on("connection", (socket) => {

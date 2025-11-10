@@ -1,16 +1,24 @@
-import { StrictMode, Suspense, lazy } from 'react'
-import { createRoot } from 'react-dom/client'
-import { RouterProvider, createBrowserRouter, redirect} from 'react-router-dom'
-import axios from 'axios'
-import "./index.css"
-import LoadingScreen from './pages/LoadingScreen'
+import { StrictMode, Suspense, lazy } from 'react';
+import { createRoot } from 'react-dom/client';
+import { RouterProvider, createBrowserRouter, redirect} from 'react-router-dom';
+import axios from 'axios';
+import "./index.css";
+import LoadingScreen from './pages/LoadingScreen';
 
-const Home = lazy(() => import("./pages/Home"))
-const Login = lazy(() => import("./pages/Login"))
-const SignUp = lazy(() => import("./pages/SignUp"))
-const Chats = lazy(() => import("./pages/Chats"))
+const Page404 = lazy(() => import("./pages/Page404"));
+const Home = lazy(() => import("./pages/Home"));
+const Login = lazy(() => import("./pages/Login"));
+const SignUp = lazy(() => import("./pages/SignUp"));
+const Chats = lazy(() => import("./pages/Chats"));
 
 const router = createBrowserRouter([
+  {
+    path: "*",
+    element: (
+      <Page404/>
+    ),
+    HydrateFallback: () => <LoadingScreen/>,
+  },
   {
     path: "/",
     element: (
