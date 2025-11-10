@@ -6,15 +6,13 @@ import passport from "passport";
 import logger from "./util/logger.js";
 import mongoose from "mongoose";
 import ConnectMongo from "connect-mongo";
-import bcrypt from "bcryptjs";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { Server } from "socket.io";
-import Crypto from "crypto-js";
-import nodemailer from "nodemailer";
 
 import { initializePassport } from "./auth/passport.js";
 import { sendEmail } from "./util/mailer.js";
+import { encrypt, decrypt } from "./util/encrypt.js";
 import User from "./database/user.js";
 import OTP from "./database/otp.js";
 import Message from "./database/message.js";
@@ -84,11 +82,19 @@ app.post("/login", async (req, res, next) => {
 app.post("/register", async (req, res) => {
     const { email, password, name, address } = req.body;
 
-    const existing = await User.findOne({ email });
+    const encryptedEmail = encrypt(email)
+    const existing = await User.findOne({ email: encryptedEmail });
     if(existing) return res.json({ status: 409, message: "Email already exists!" });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ email, name, password: hashedPassword, address });
+    const encryptedPassword = encrypt(password)
+    const encryptedName = encrypt(name);
+    const encryptedAddress = {
+        region: encrypt(address.region),
+        city: encrypt(address.city),
+        barangay: encrypt(address.barangay),
+        address: encrypt(address.address)
+    }
+    const user = new User({ email: encryptedEmail, name: encryptedName, password: encryptedPassword, address: encryptedAddress });
     await user.save();
 
     logger.info("AUTHENTICATOR", "A new user registered: " + user.id);
@@ -97,7 +103,7 @@ app.post("/register", async (req, res) => {
 
 app.post("/register/check-email", async(req, res) => {
     const { email } = req.body;
-    const existing = await User.findOne({ email });
+    const existing = await User.findOne({ email: encrypt(email) });
     if(existing) return res.json({ status: 409, message: "Email already exists!" });
 
     return res.json({ status: 200, message: "Email is not exists!" })
@@ -106,10 +112,11 @@ app.post("/register/check-email", async(req, res) => {
 app.post("/register/send-code", async (req, res) => {
     const { email } = req.body;
 
-    const existing = await OTP.findOne({ email });
-    if(existing) await OTP.deleteOne({ email });
+    const encryptedEmail = encrypt(email);
+    const existing = await OTP.findOne({ email: encryptedEmail });
+    if(existing) await OTP.deleteOne({ email: encryptedEmail });
 
-    const otp = new OTP({ email });
+    const otp = new OTP({ email: encryptedEmail });
     await otp.save();
 
     await sendEmail(
@@ -123,24 +130,25 @@ app.post("/register/send-code", async (req, res) => {
         <meta name="supported-color-schemes" content="light">
         </head>
         <body>
-        <div style="width:100%; background-color:#E94857 !important; padding:50px 0; text-align:center;">
-            <img src="https://servicetogo.store/assets/img/logo.png" alt="ServiceToGo" width="300" style="display:block; margin:0 auto; margin-top:-50px;" />
-            <table align="center" width="300" cellpadding="0" cellspacing="0" style="background-color:#FAD9C1 !important; border-radius:10px; box-shadow:0 4px 4px rgba(0,0,0,0.15); position:relative;">
-                <tr>
-                    <td style="padding:40px 20px 20px 20px; text-align:center; position:relative;">
-                        <h1 style="font-family: Arial, sans-serif; color:#F45E8E !important; margin:0px 0 20px 0;">Verification Code</h1>
-                        <div style="background-color:#fdfdfd !important; padding:15px 0; margin:0 auto 20px auto; width:200px; border-radius:5px;">
-                            <h2 style="font-family: Arial, sans-serif; color:#F58C22 !important; letter-spacing:5px; margin:0;">${otp.code}</h2>
-                        </div>
-                        <p style="font-family: Arial, sans-serif; color:#111111 !important; font-size:14px; margin:0;">This code will expire in 5 minutes.</p>
-                    </td>
-                </tr>
-            </table>
-        </div>
+            <div style="width:100%; text-align:center;">
+                <img src="cid:logo" width="200" alt="ServiceToGo">
+                <table>
+                    <tr>
+                        <td style="text-align:left; position:relative;">
+                            <h1 style="font-family: Arial, sans-serif; color:#F45E8E !important;">Verification Code</h1>
+                            <h3>Please confirm your registration request</h3>
+                            <p>To verify your account, please use the following code to confirm your registration request. This code will expire in 5 minutes.</p>
+                            <div style="background-color:#E7E6F0 !important; padding:15px 0; width: 100%; border-radius:5px; text-align: center;">
+                                <h2 style="font-family: Arial, sans-serif; color:#F58C22 !important; letter-spacing:5px; margin:0;">${decrypt(otp.code)}</h2>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </body>
         </html>
         `,
-        `Verification Code: ${otp.code}`
+        `Verification Code: ${decrypt(otp.code)}`
         );
     
     return res.json({ status: 200 })
@@ -148,11 +156,14 @@ app.post("/register/send-code", async (req, res) => {
 
 app.post("/register/verify", async (req, res) => {
     const { email, code } = req.body;
-    const existing = await OTP.findOne({ email, code });
+
+    const encryptedEmail = encrypt(email);
+    const encryptedCode = encrypt(code);
+    const existing = await OTP.findOne({ email: encryptedEmail, code: encryptedCode });
     if(!existing) return res.json({ status: 400, message: "Invalid OTP!" });
 
     if(existing.expiresAt < new Date()) return res.json({ stats: 400, message: "OTP expired!"});
-    await OTP.deleteOne({ email, code });
+    await OTP.deleteOne({ email: encryptedEmail, code: encryptedCode });
 
     return res.json({ status: 200, message: "OTP verified successfully" });
 })
@@ -206,7 +217,7 @@ app.get("/users", async (req, res) => {
 
     const users = await User.find({});
 
-    return res.json({ status: 200, users: users.filter((user) => user.id != req.user.id).map((user) => { return { id: user.id, name: user.name } })})
+    return res.json({ status: 200, users: users.filter((user) => user.id != req.user.id).map((user) => { return { id: user.id, name: decrypt(user.name) } })})
 })
 
 app.get("/message/:userId", async (req, res) => {
@@ -223,7 +234,7 @@ app.get("/message/:userId", async (req, res) => {
     });
 
     return res.json({ status: 200, messages: messages.map((msg) => 
-        { return { id: msg.id, from: msg.fromUser, to: msg.toUser, message: Crypto.AES.decrypt(msg.message, process.env.SECRET_KEY).toString(Crypto.enc.Utf8), createdAt: msg.createdAt }}
+        { return { id: msg.id, from: msg.fromUser, to: msg.toUser, message: decrypt(msg.message), createdAt: msg.createdAt }}
     ) })
 })
 
@@ -232,7 +243,7 @@ io.on("connection", (socket) => {
 
     socket.on("send_message", async (data) => {
         const { from, to, message } = data;
-        const msg = new Message({ fromUser: from, toUser: to, message: Crypto.AES.encrypt(message, process.env.SECRET_KEY).toString() });
+        const msg = new Message({ fromUser: from, toUser: to, message: encrypt(message) });
         await msg.save();
 
         logger.info("MESSENGER", `User ${from} sent a message to ${to}.`);

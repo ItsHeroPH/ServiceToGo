@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Strategy } from "passport-local";
-import bcrypt from "bcryptjs";
 import User from "../database/user.js";
+import { decrypt, encrypt } from "../util/encrypt.js";
 
 /**
  * @param {passport} passport 
@@ -11,10 +11,11 @@ export function initializePassport(passport) {
         new Strategy(
             { usernameField: "email" },
             async (email, password, done) => {
-                const user = await User.findOne({ email });
+                const hashedEmail = encrypt(email)
+                const user = await User.findOne({ email: hashedEmail });
                 if(!user) return done(null, false, { message: "User not found!" });
                 
-                const match = await bcrypt.compare(password, user.password);
+                const match = decrypt(user.password) === password;
                 if(!match) return done(null, false, { message: "Wrong password!" });
 
                 return done(null, user)
@@ -27,7 +28,12 @@ export function initializePassport(passport) {
     passport.deserializeUser(async (id, done) => {
         try {
             const user = await User.findOne({ id });
-            done(null, user)
+            const decryptedUser = {
+                id: user.id,
+                email: decrypt(user.email),
+                name: decrypt(user.name),
+            }
+            done(null, decryptedUser)
         } catch(err) {
             done(err)
         }
