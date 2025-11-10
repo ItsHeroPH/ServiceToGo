@@ -9,6 +9,7 @@ const Page404 = lazy(() => import("./pages/Page404"));
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const SignUp = lazy(() => import("./pages/SignUp"));
+const PasswordReset = lazy(() => import("./pages/PasswordReset"));
 const Chats = lazy(() => import("./pages/Chats"));
 
 const router = createBrowserRouter([
@@ -57,7 +58,7 @@ const router = createBrowserRouter([
     HydrateFallback: () => <LoadingScreen/>,
     loader: async () => {
       const userFetch = (await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true })).data;
-      if(userFetch.status == 200) return redirect("/");
+      if(userFetch.status == 200) return redirect("/home");
     }
   },
   {
@@ -72,7 +73,22 @@ const router = createBrowserRouter([
     HydrateFallback: () => <LoadingScreen/>,
     loader: async () => {
       const userFetch = (await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true })).data;
-      if(userFetch.status == 200) return redirect("/");
+      if(userFetch.status == 200) return redirect("/home");
+    }
+  },
+  {
+    path: "/resetpassword",
+    element: (
+      <Suspense fallback={
+        <LoadingScreen/>
+      }>
+        <PasswordReset />
+      </Suspense>
+    ),
+    HydrateFallback: () => <LoadingScreen/>,
+    loader: async () => {
+      const userFetch = (await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true })).data;
+      if(userFetch.status == 200) return redirect("/home");
     }
   },
   {

@@ -31,7 +31,7 @@ export default function Login() {
                             <Email onNext={async (e) => {
                                 setPage((prev) => prev + 1);
                                 handleChange(e)
-                                await axios.post(`${import.meta.env.VITE_API_URL}/send-code`, { email: e.email }, { withCredentials: true });;
+                                await axios.post(`${import.meta.env.VITE_API_URL}/send-code`, { email: e.email }, { withCredentials: true });
                             }}/>
                         ) : page == 2 ? (
                             <Verify email={data.email} onNext={() => {

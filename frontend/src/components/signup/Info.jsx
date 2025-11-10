@@ -33,6 +33,10 @@ export default function Info({ onNext = ({}) => {} }) {
                         <input className="w-5 accent-citrus-rose outline-none cursor-pointer" type="radio" checked={gender === "female"} name="gender"/>
                         <label className="text-sm text-citrus-rose cursor-pointer">Female</label>
                     </div>
+                    <div className="flex flex-row gap-1 cursor-pointer" onClick={() => setGender("other")}>
+                        <input className="w-5 accent-citrus-rose outline-none cursor-pointer" type="radio" checked={gender === "other"} name="gender"/>
+                        <label className="text-sm text-citrus-rose cursor-pointer">Other</label>
+                    </div>
                 </div>
             </div>
             <div>

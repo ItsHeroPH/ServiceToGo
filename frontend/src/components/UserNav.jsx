@@ -29,7 +29,7 @@ export default function UserNav({ user }) {
                     ${showUserNav ? "left-0 md:opacity-100 md:top-9 pointer-events-auto" : "-left-full md:opacity-0 md:top-0 pointer-events-none" }
             `}>
                 <div className="flex flex-col p-5 md:hidden">
-                    <button className="self-end bg-citrus-rose w-8 h-8 rounded-lg" onClick={() => setShowUserNav(false)}>
+                    <button className="self-end bg-citrus-rose w-8 h-8 rounded-lg cursor-pointer" onClick={() => setShowUserNav(false)}>
                         <FontAwesomeIcon className="text-citrus-peach-light rotate-180" icon={faRightToBracket}/>
                     </button>
                     <img className="w-[60%] mx-auto cursor-pointer" src={logo} onClick={() => navigate("/home")}/> 
@@ -54,7 +54,7 @@ export default function UserNav({ user }) {
 
 function Link({ onClick = () => {}, children }) {
     return (
-        <div className="w-full py-2 px-3 text-md text-slate-500 font-semibold cursor-pointer transition-all duration-500 hover:text-citrus-pink hover:bg-slate-100" onClick={onClick}>
+        <div className="w-full py-2 px-4 text-md text-slate-500 font-semibold cursor-pointer transition-all duration-500 hover:text-citrus-pink hover:bg-slate-100" onClick={onClick}>
             {children}
         </div>
     )

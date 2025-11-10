@@ -36,6 +36,7 @@ export default function Login() {
                             <FontAwesomeIcon className="text-citrus-pink cursor-pointer" icon={showPassword ? faEye : faEyeSlash} onClick={() => setShowPassword((prev) => !prev)}/>
                         </div>
                     </div>
+                    <button className="text-sm text-citrus-rose font-bold self-start cursor-pointer" onClick={() => navigate("/resetpassword")}>Forgot Password?</button>
                     <div>
                         { hasError ? <p className="text-sm text-rose-400 font-semibold">{error}</p> : <></>  }
                         <button 

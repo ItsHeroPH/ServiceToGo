@@ -27,11 +27,9 @@ const io = new Server(server, {
     }
 })
 
-mongoose.connect(process.env.MONGODB_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => logger.info("MongoDB", "Connected successfully!"))
-  .catch(err => logger.error("MongoDB", err));
+mongoose.connect(process.env.MONGODB_URL)
+    .then(() => logger.info("MongoDB", "Connected successfully!"))
+    .catch(err => logger.error("MongoDB", err));
 
 
 
@@ -153,7 +151,7 @@ app.post("/send-code", async (req, res) => {
 })
 
 app.post("/verify", async (req, res) => {
-    const { email, code } = req.body;
+    const { email, code, remove } = req.body;
 
     const encryptedEmail = encrypt(email);
     const encryptedCode = encrypt(code);
@@ -161,7 +159,9 @@ app.post("/verify", async (req, res) => {
     if(!existing) return res.json({ status: 400, message: "Invalid OTP!" });
     
     if(existing.expiresAt < new Date()) return res.json({ status: 400, message: "OTP expired!"});
-    await OTP.deleteOne({ email: encryptedEmail, code: encryptedCode });
+    if(remove) {
+        await OTP.deleteOne({ email: encryptedEmail, code: encryptedCode });
+    }
 
     return res.json({ status: 200 });
 })
@@ -176,6 +176,23 @@ app.get("/logout", async (req, res, next) => {
         logger.info("AUTHENTICATOR", "User " + user.id + " logged out.");
         res.json({ status: 200, message: "Logging out successfully!" });
     })
+})
+
+app.post("/reset-password", async (req, res) => {
+    const { email, code, password } = req.body;
+    if(!email && !code && !password) return res.json({ status: 422, message: "Fields incomplete" });
+    const encryptedEmail = encrypt(email);
+    const encryptedCode = encrypt(code);
+    const encryptedPassword = encrypt(password);
+    const user = await User.findOne({ email: encryptedEmail });
+    if(!user) return res.json({ status: 400, message: "User invalid!" });
+    const existing = await OTP.findOne({ email: encryptedEmail, code: encryptedCode });
+    if(!existing) return res.json({ status: 400, message: "Invalid OTP!" });
+    user.password = encryptedPassword;
+    await user.save();
+    await OTP.deleteOne({ email: encryptedEmail, code: encryptedCode });
+
+    return res.json({ status: 200 });
 })
 
 app.get("/user", async (req, res) => {
