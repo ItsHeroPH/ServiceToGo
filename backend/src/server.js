@@ -116,6 +116,13 @@ app.post("/register/send-code", async (req, res) => {
         email, 
         "Verification Code",
         `
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <meta name="color-scheme" content="light">
+        <meta name="supported-color-schemes" content="light">
+        </head>
+        <body>
         <div style="width:100%; background-color:#E94857; padding:50px 0; text-align:center;">
             <img src="https://servicetogo.store/assets/img/logo.png" alt="ServiceToGo" width="300" style="display:block; margin:0 auto; margin-top:-50px;" />
             <table align="center" width="300" cellpadding="0" cellspacing="0" style="background-color:#FAD9C1; border-radius:10px; box-shadow:0 4px 4px rgba(0,0,0,0.15); position:relative;">
@@ -130,6 +137,8 @@ app.post("/register/send-code", async (req, res) => {
                 </tr>
             </table>
         </div>
+        </body>
+        </html>
         `,
         `Verification Code: ${otp.code}`
         );
