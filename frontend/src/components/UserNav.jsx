@@ -34,7 +34,7 @@ export default function UserNav({ user }) {
                     <img className="w-[60%] mx-auto cursor-pointer" src={logo} onClick={() => navigate("/home")}/> 
                 </div>               
                 <Link onClick={() => {
-                    navigate("/profile")
+                    navigate("/me/profile")
                 }}>Profile</Link>
                 <Link onClick={() => {
                     navigate("/notification")
