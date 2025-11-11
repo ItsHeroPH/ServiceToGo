@@ -243,6 +243,7 @@ app.get("/user/delete", async (req, res, next) => {
                 { toUser: user.id }
             ]
         });
+        await Files.deleteMany({ fromUser: user.id })
 
         logger.info("AUTHENTICATOR", "User " + user.id + " deleted.");
         res.json({ status: 200, message: "Data deleted" });
