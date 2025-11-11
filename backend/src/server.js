@@ -285,7 +285,7 @@ app.get("/images/:id", async (req, res) => {
     if(!existing) return res.json({ status: 404, message: "Image not found" });
 
     res.set("Content-Type", existing.fileType)
-    return res.send(Buffer.from(existing.data, "base64"));
+    return res.send(Buffer.from(decrypt(existing.data), "base64"));
 });
 
 app.post("/upload", async (req, res) => {
@@ -298,7 +298,7 @@ app.post("/upload", async (req, res) => {
         if(existing) await Files.deleteOne({ id: existing.id });
     }
 
-    const file = new Files({ owner: req.user.id, fileType, type, data });
+    const file = new Files({ owner: req.user.id, fileType, type, data: encrypt(data) });
     await file.save();
 
     if(type === "avatar") {
