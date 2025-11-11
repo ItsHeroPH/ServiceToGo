@@ -82,6 +82,7 @@ function AddressEditor({ onClose = () => {}, onComplete = () => {} }) {
     }, [])
 
     useEffect(() => {
+        if(!selectedRegion) return;
         async function fetchProvinces() {
             const region = regions[selectedRegion];
             const response = (await axios.get(`https://psgc.gitlab.io/api/regions/${region.code}/provinces/`));
