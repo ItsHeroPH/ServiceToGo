@@ -43,7 +43,6 @@ export default function Info({ onNext = ({}) => {} }) {
                 <label className="block text-sm font-semibold text-citrus-orange">Date of Birth</label>
                 <input className="bg-slate-200 w-full outline-none px-3 py-1.5 rounded-lg text-md text-citrus-pink caret-citrus-pink font-semibold" type="date" max={new Date().toISOString().split("T")[0]} onChange={(e) => {
                     setBirthday(e.target.value)
-                    console.log(e.target.value)
                 }} placeholder="Age"/>
             </div>
             <button className={`${isValid ? "bg-citrus-rose cursor-pointer transition-all duration-500 hover:text-rose-300 hover:scale-105 hover:shadow-lg" : "bg-citrus-rose/50"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}

@@ -14,10 +14,9 @@ export default function UserNav({ user }) {
     return (
         <div className="relative">
             <div className="flex flex-row items-center gap-1 cursor-pointer" onClick={() => setShowUserNav(!showUserNav)}>
-                <img className="min-w-7 max-w-7 rounded-full" src={profile}/>
+                <img className="min-w-7 max-w-7 rounded-full" src={user.avatar ? user.avatar : profile}/>
                 <div className="flex flex-col">
-                    <p className="text-md text-citrus-peach-light font-bold hidden sm:block overflow-hidden break-all text-ellipsis line-clamp-1 truncate">{user.name}</p>
-                    <p className="text-xs text-citrus-peach-light font-bold hidden sm:block">@{user.username}</p>
+                    <p className="text-md/6 text-citrus-peach-light font-bold hidden sm:block overflow-hidden break-all text-ellipsis line-clamp-1 truncate">{user.name}</p>
                 </div>
                 <FontAwesomeIcon className={`text-citrus-peach-light transition-all duration-300 ${showUserNav ? "rotate-180" : "rotate-0"}`} icon={faAngleUp}/>
             </div>

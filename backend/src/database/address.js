@@ -6,7 +6,8 @@ const schema = new Schema({
    province: { type: String, require: true },
    city: { type: String, require: true },
    barangay: { type: String, require: true },
-   address: { type: String, require: true }
+   address: { type: String, require: true },
+   isDefault: { type: Boolean, default: false }
 })
 
 export default model("address", schema);

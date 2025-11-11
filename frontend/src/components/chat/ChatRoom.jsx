@@ -3,9 +3,8 @@ import profile from "../../assets/blank_profile.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useLoaderData } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { lazy } from "react";
 
-const ChatBubble = lazy(() => import("./ChatBubble"));
+import ChatBubble from "./ChatBubble";
 
 export default function ChatRoom({ user: currentUser, message, messages, onMessageChange, onMessageSent }) {
     const { user } = useLoaderData();
@@ -38,7 +37,7 @@ export default function ChatRoom({ user: currentUser, message, messages, onMessa
                 <>
                     <div className="w-full h-14 shadow-xl p-2">
                         <div className="h-full flex items-center gap-2">
-                            <img className="min-w-7 w-7 rounded-full" src={profile}/>
+                            <img className="min-w-7 w-7 rounded-full" src={currentUser.avatar ? currentUser.avatar : profile}/>
                             <div>
                                 <h1 className="text-lg text-citrus-rose font-bold">{currentUser.name}</h1>
                                 <p className="text-sm text-citrus-pink font-bold">@{currentUser.username}</p>
@@ -53,7 +52,7 @@ export default function ChatRoom({ user: currentUser, message, messages, onMessa
                     </div>
                     <div className="w-full min-h-13 max-h-30 rounded-b-lg inset-shadow-sm px-3 py-2 flex flex-row items-center gap-2">
                         <textarea className="bg-slate-100 w-full min-h-10 h-10 max-h-full px-2 py-1.5 rounded-xl outline-none text-lg text-citrus-orange font-semibold"
-                            placeholder={`Say something for @${user.username}`} onChange={(e) => onMessageChange(e.target.value)} value={message}></textarea>
+                            placeholder={`Say something for @${currentUser.username}`} onChange={(e) => onMessageChange(e.target.value)} value={message}></textarea>
                         <button className="px-2 text-lg text-citrus-rose cursor-pointer" onClick={() => onMessageSent()}>
                             <FontAwesomeIcon icon={faPaperPlane}/>
                         </button>

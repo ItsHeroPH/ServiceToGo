@@ -19,7 +19,7 @@ export default function ChatSideBar({ users, latestMessages, showSidebar, onSele
 function User({ user, onSelectUser, latestMessage }) {
     return (
         <div className="w-full h-15 flex flex-row items-center gap-2 cursor-pointer" onClick={() => onSelectUser(user)}>
-            <img className="min-w-10 w-10 max-w-10 rounded-full" src={profile}/>
+            <img className="min-w-10 w-10 max-w-10 rounded-full" src={user.avatar ? user.avatar : profile}/>
             <div className="w-full max-h-full flex flex-col overflow-hidden">
                 <h1 className="text-lg text-citrus-orange font-bold truncate">{user.name}</h1>
                 <div className="flex gap-1">

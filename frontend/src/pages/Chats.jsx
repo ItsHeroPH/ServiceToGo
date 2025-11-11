@@ -80,7 +80,7 @@ export default function Chats() {
                     </div>
                     <UserNav user={user} />
                 </div>
-                <div className="w-full h-full flex flex-row gap-2 relative overflow-hidden">
+                <div className="w-full h-full px-2 flex flex-row gap-2 relative overflow-hidden">
                     <ChatSideBar users={usersList} latestMessages={latestMessages} showSidebar={showSidebar} onSelectUser={(u) => {
                         if(u !== null) {
                             setCurrentUser(u)

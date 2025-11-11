@@ -33,7 +33,8 @@ export function initializePassport(passport) {
                 email: decrypt(user.email),
                 name: decrypt(user.name),
                 username: decrypt(user.username),
-                birthday: decrypt(user.birthday)
+                birthday: decrypt(user.birthday),
+                avatar: user.avatar
             }
             done(null, decryptedUser)
         } catch(err) {

@@ -9,6 +9,9 @@ import ConnectMongo from "connect-mongo";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { Server } from "socket.io";
+import { existsSync, unlink } from "fs";
+import { writeFile } from "fs";
+import path from "path";
 
 import { initializePassport } from "./auth/passport.js";
 import { sendEmail } from "./util/mailer.js";
@@ -16,6 +19,7 @@ import { encrypt, decrypt } from "./util/encrypt.js";
 import User from "./database/user.js";
 import OTP from "./database/otp.js";
 import Message from "./database/message.js";
+import Files from "./database/files.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -53,7 +57,7 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
@@ -202,8 +206,25 @@ app.get("/user", async (req, res) => {
         id: req.user.id,
         email: req.user.email,
         username: req.user.username,
-        name: req.user.name
+        name: req.user.name,
+        birthday: req.user.birthday,
+        avatar: req.user.avatar
     } })
+})
+
+app.post("/user/edit", async (req, res) => {
+    if(!req.isAuthenticated()) return res.json({ status: 409, message: "Not authenticated "});
+
+    const { name } = req.body;
+    const user = await User.findOne({ id: req.user.id });
+
+    if(!user) return res.json({ status: 409, message: "User invalid" });
+
+    if(name) user.name = encrypt(name);
+
+    await user.save();
+
+    return res.json({ status: 200 });
 })
 
 app.get("/user/delete", async (req, res, next) => {
@@ -233,7 +254,7 @@ app.get("/users", async (req, res) => {
 
     const users = await User.find({});
 
-    return res.json({ status: 200, users: users.filter((user) => user.id != req.user.id).map((user) => { return { id: user.id, name: decrypt(user.name) } })})
+    return res.json({ status: 200, users: users.filter((user) => user.id != req.user.id).map((user) => { return { id: user.id, name: decrypt(user.name), username: decrypt(user.username), avatar: user.avatar } })})
 })
 
 app.get("/message/:userId", async (req, res) => {
@@ -254,10 +275,38 @@ app.get("/message/:userId", async (req, res) => {
     ) })
 })
 
-app.post("/upload", async (req, res) => {
-    const { filename, data } = req.body;
+app.get("/images/:id", async (req, res) => {
+    if(!req.isAuthenticated()) return res.json({ status: 409, message: "Not authenticated" });
+    const { id } = req.params;
 
-    
+    if(!id) return res.json({ status: 422, message: "Fields incomplete" });
+    const existing = await Files.findOne({ id });
+    if(!existing) return res.json({ status: 404, message: "Image not found" });
+
+    res.set("Content-Type", existing.fileType)
+    return res.send(Buffer.from(existing.data, "base64"));
+});
+
+app.post("/upload", async (req, res) => {
+    const { data, fileType, type } = req.body;
+    if(!req.isAuthenticated()) return res.json({ status: 409, message: "Not authenticated" });
+    if(!data && !fileType && !type) return res.json({ status: 422, message: "Fields incomplete" });
+
+    if(type === "avatar") {
+        const existing = await Files.findOne({ owner: req.user.id, type: "avatar" });
+        if(existing) await Files.deleteOne({ id: existing.id });
+    }
+
+    const file = new Files({ owner: req.user.id, fileType, type, data });
+    await file.save();
+
+    if(type === "avatar") {
+        const user = await User.findOne({ id: req.user.id });
+        user.avatar = file.id;
+        await user.save();
+    }
+
+    return res.json({ status: 200, id: file.id })
 })
 
 io.on("connection", (socket) => {
