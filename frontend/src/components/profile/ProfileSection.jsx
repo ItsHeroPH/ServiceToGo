@@ -154,7 +154,7 @@ export default function ProfileSection({ user }) {
                                         setAvatar(URL.createObjectURL(avatarBlob));
                                         setIsCropModalOpen(false);
                                         setUploading(false);
-                                        navigate("/profile", { replace: true });
+                                        navigate("/me/profile", { replace: true });
                                     }
                                     } catch (err) {
                                     console.error(err);
@@ -208,7 +208,7 @@ export default function ProfileSection({ user }) {
                                     const response = (await axios.post(`${import.meta.env.VITE_API_URL}/user/edit`, { name }, { withCredentials: true })).data;
                                     if(response.status == 200) {
                                         setSaving(false)
-                                        navigate("/profile", { replace: true })
+                                        navigate("/me/profile", { replace: true })
                                     }
                                 }
                             }}

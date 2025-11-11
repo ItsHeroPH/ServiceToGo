@@ -9,9 +9,6 @@ import ConnectMongo from "connect-mongo";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { Server } from "socket.io";
-import { existsSync, unlink } from "fs";
-import { writeFile } from "fs";
-import path from "path";
 
 import { initializePassport } from "./auth/passport.js";
 import { sendEmail } from "./util/mailer.js";
@@ -20,6 +17,8 @@ import User from "./database/user.js";
 import OTP from "./database/otp.js";
 import Message from "./database/message.js";
 import Files from "./database/files.js";
+import Address from "./database/address.js";
+import message from "./database/message.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -308,6 +307,51 @@ app.post("/upload", async (req, res) => {
     }
 
     return res.json({ status: 200, id: file.id })
+});
+
+app.get("/address", async (req, res) => {
+    if(!req.isAuthenticated()) return res.json({ status: 409, message: "Not authenticated" });
+
+    const addresses = (await Address.find({ owner: req.user.id })).map((address) => ({
+        id: address.id,
+        region: decrypt(address.region),
+        province: address.province ? decrypt(address.province) : "",
+        city: decrypt(address.city),
+        barangay: decrypt(address.barangay),
+        address: decrypt(address.address)
+    }));
+
+    return res.json({ status: 200, addresses })
+});
+
+app.post("/address/add", async (req, res) => {
+    if(!req.isAuthenticated()) return res.json({ status: 409, message: "Not authenticated" });
+    
+    const { region, province, city, barangay, address } = req.body;
+
+    const newAddress = new Address({
+        owner: req.user.id,
+        region: encrypt(region),
+        province: province ? encrypt(province) : "",
+        city: encrypt(city),
+        barangay: encrypt(barangay),
+        address: encrypt(address)
+    });
+
+    await newAddress.save();
+
+    return res.json({ status: 200 });
+});
+
+app.post("/address/delete", async (req, res) => {
+    if(!req.isAuthenticated()) return res.json({ status: 409, message: "Not authenticated" });
+    
+    const { id } = req.body;
+    const existing = await Address.findOne({ id, owner: req.user.id });
+    if(!existing) return res.json({ status: 404, message: "Address Not Found!"});
+    
+    await Address.deleteOne({ id, owner: req.user.id });
+    return res.json({ status: 200 });
 })
 
 io.on("connection", (socket) => {

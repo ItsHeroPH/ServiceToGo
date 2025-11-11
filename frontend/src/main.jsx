@@ -4,7 +4,6 @@ import { RouterProvider, createBrowserRouter, redirect} from 'react-router-dom';
 import axios from 'axios';
 import "./index.css";
 import LoadingScreen from './pages/LoadingScreen';
-import Profile from './pages/Profile';
 
 const Page404 = lazy(() => import("./pages/Page404"));
 const Home = lazy(() => import("./pages/Home"));
@@ -12,6 +11,8 @@ const Login = lazy(() => import("./pages/Login"));
 const SignUp = lazy(() => import("./pages/SignUp"));
 const PasswordReset = lazy(() => import("./pages/PasswordReset"));
 const Chats = lazy(() => import("./pages/Chats"));
+const Profile = lazy(() => import("./pages/profile/Profile"));
+const Address = lazy(() => import("./pages/profile/Address"));
 
 const router = createBrowserRouter([
   {
@@ -98,7 +99,7 @@ const router = createBrowserRouter([
     }
   },
   {
-    path: "/profile",
+    path: "/me/profile",
     element: (
       <Suspense fallback={
         <LoadingScreen/>
@@ -116,6 +117,33 @@ const router = createBrowserRouter([
         return { user: {...userdata, avatar: URL.createObjectURL(avatar)}}
       }
       return { user: userdata }
+    }
+  },
+  {
+    path: "/me/address",
+    element: (
+      <Suspense fallback={
+        <LoadingScreen/>
+      }>
+        <Address />
+      </Suspense>
+    ),
+    HydrateFallback: () => <LoadingScreen/>,
+    loader: async () => {
+      const userFetch = (await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true })).data;
+      if(userFetch.status == 409) return redirect("/login");
+      let userdata;
+      if(userFetch.user.avatar) {
+        const avatar = (await axios.get(`${import.meta.env.VITE_API_URL}/images/${userFetch.user.avatar}`, { withCredentials: true, responseType: "blob" })).data;
+        userdata = {...userFetch.user, avatar: URL.createObjectURL(avatar)}
+      } else {
+        userdata = userFetch.data.user;
+      }
+
+      const addressFetch = (await axios.get(`${import.meta.env.VITE_API_URL}/address`, { withCredentials: true })).data;
+      
+
+      return { user: userdata, addresses: addressFetch.addresses }
     }
   },
   {

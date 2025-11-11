@@ -1,7 +1,8 @@
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import profile from "../../assets/blank_profile.png";
 
 export default function SideBar({ showSidebar, setShowSidebar }) {
+    const navigate = useNavigate();
     const { user } = useLoaderData();
     return (
         <>
@@ -16,11 +17,11 @@ export default function SideBar({ showSidebar, setShowSidebar }) {
                     </div>
                 </div>
                 <div className="w-[90%] h-0.5 bg-slate-400/50 my-3"></div>
-                <NavItem>Profile</NavItem>
-                <NavItem>Addresses</NavItem>
-                <NavItem>Change Password</NavItem>
-                <NavItem>My Services</NavItem>
-                <NavItem>My Purchases</NavItem>
+                <NavItem onClick={() => navigate("/me/profile")}>Profile</NavItem>
+                <NavItem onClick={() => navigate("/me/address")}>Addresses</NavItem>
+                <NavItem onClick={() => navigate("/me/change-password")}>Change Password</NavItem>
+                <NavItem onClick={() => navigate("/me/services")}>My Services</NavItem>
+                <NavItem onClick={() => navigate("/me/purchases")}>My Purchases</NavItem>
             </div>
         </>
     )
@@ -28,7 +29,7 @@ export default function SideBar({ showSidebar, setShowSidebar }) {
 
 function NavItem({ onClick, children }) {
     return (
-        <div className="w-full px-4 py-2 cursor-pointer text-lg text-citrus-pink font-semibold hover:bg-citrus-orange/10 transitiol-all duration-200">
+        <div className="w-full px-4 py-2 cursor-pointer text-lg text-citrus-pink font-semibold hover:bg-citrus-orange/10 transitiol-all duration-200" onClick={onClick}>
             {children}
         </div>
     )

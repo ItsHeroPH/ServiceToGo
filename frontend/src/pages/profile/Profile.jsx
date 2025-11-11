@@ -1,13 +1,13 @@
 import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, lazy } from "react";
-import logo from "../assets/logo.png";
+import logo from "../../assets/logo.png";
 import { useLoaderData, useNavigate } from "react-router-dom";
 
-const UserNav = lazy(() => import("../components/UserNav"));
-const SideBar = lazy(() => import("../components/profile/Sidebar"));
+const UserNav = lazy(() => import("../../components/UserNav"));
+const SideBar = lazy(() => import("../../components/profile/Sidebar"));
 
-import ProfileSection from "../components/profile/ProfileSection";
+import ProfileSection from "../../components/profile/ProfileSection";
 
 export default function Profile() {
     const navigate = useNavigate();
