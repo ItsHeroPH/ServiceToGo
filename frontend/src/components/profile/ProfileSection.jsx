@@ -179,7 +179,7 @@ export default function ProfileSection({ user }) {
             <h1 className="text-xl text-citrus-rose font-bold">My Profile</h1>
             <p className="text-md text-slate-500 font-semibold">Manage your account</p>
             <div className="w-full h-0.5 bg-slate-400/50 my-3"></div>
-            <div className="flex flex-col-reverse md:flex-row">
+            <div className="flex flex-col-reverse md:flex-row gap-5">
                 <div className="w-full flex flex-col gap-4">
                     <div className="flex flex-row gap-2 items-center">
                         <label className="text-md text-citrus-orange font-semibold">Email:</label>
@@ -224,7 +224,8 @@ export default function ProfileSection({ user }) {
                         </button>
                         <button className="w-40 px-5 py-2 rounded-lg bg-transparent text-citrus-rose outline outline-citrus-rose text-md font-semibold cursor-pointer transition-all duration-300 hover:bg-citrus-rose hover:text-citrus-peach-light"
                             onClick={async() => {
-                                
+                                const response = (await axios.get(`${import.meta.env.VITE_API_URL}/user/delete`, { withCredentials: true })).data;
+                                if(response.status === 200) return navigate("/login");
                             }}
                         >
                             Delete Account
