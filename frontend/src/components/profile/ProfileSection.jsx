@@ -69,16 +69,43 @@ export default function ProfileSection({ user }) {
                             onMouseUp={(e) => {
                                 setDragging(false)
                             }}
-                        >
-                            <canvas ref={canvasRef} onMouseDown={(e) => {
+                            onTouchMove={(e) => {
+                                if (!dragging) return;
                                 const rect = canvasRef.current.getBoundingClientRect();
-                                const mouseX = e.clientX - rect.left;
-                                const mouseY = e.clientY - rect.top;
+                                let touch = e.touches[0];
+                                let mouseX = touch.clientX - rect.left;
+                                let mouseY = touch.clientY - rect.top;
 
-                                setDragging(true);
-                                setOffset({ x: mouseX - imgPos.x, y: mouseY - imgPos.y });
+                                setImgPos({
+                                    ...imgPos,
+                                    x: mouseX - offset.x,
+                                    y: mouseY - offset.y,
+                                });
+                            }}
+                            onTouchEnd={(e) => {
+                                setDragging(false)
+                            }}
+                        >
+                            <canvas ref={canvasRef} 
+                                onMouseDown={(e) => {
+                                    const rect = canvasRef.current.getBoundingClientRect();
+                                    const mouseX = e.clientX - rect.left;
+                                    const mouseY = e.clientY - rect.top;
 
-                            }}/>
+                                    setDragging(true);
+                                    setOffset({ x: mouseX - imgPos.x, y: mouseY - imgPos.y });
+
+                                }}
+                                onTouchStart={(e) => {
+                                    const rect = canvasRef.current.getBoundingClientRect();
+                                    const touch = e.touches[0];
+                                    const mouseX = touch.clientX - rect.left;
+                                    const mouseY = touch.clientY - rect.top;
+
+                                    setDragging(true);
+                                    setOffset({ x: mouseX - imgPos.x, y: mouseY - imgPos.y });
+                                }}
+                            />
                             <button className="bg-citrus-rose px-5 py-2 rounded-lg text-md text-citrus-peach-light font-semibold cursor-pointer transition-all duration-300 hover:bg-transparent hover:text-citrus-rose hover:outline-2 hover:outline-citrus-rose" onClick={() => {
                                 const cropX = (300 - 300) / 2;
                                 const cropY = (300 - 300) / 2;
