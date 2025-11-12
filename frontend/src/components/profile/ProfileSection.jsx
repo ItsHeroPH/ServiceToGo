@@ -238,11 +238,8 @@ export default function ProfileSection({ user }) {
                     </div>
                 </div>
                 <div className="min-w-50 flex flex-col justify-center items-center gap-2">
-                    <div className="relative group cursor-pointer" onClick={() => uploadRef.current.click()}>
-                        <img className="w-30 rounded-full" src={avatar ? avatar : profile}/>
-                        <FontAwesomeIcon className="absolute p-6 top-0 bottom-0 left-0 right-0 text-slate-500/50 transition-all duration-300 opacity-0 group-hover:opacity-100" size="4x" icon={faEdit}/>
-                    </div>
-                    <button className="bg-citrus-rose px-5 py-2 rounded-lg text-md text-citrus-peach-light font-semibold cursor-pointer transition-all duration-300 hover:bg-transparent hover:text-citrus-rose hover:outline hover:outline-citrus-rose"
+                    <img className="w-30 rounded-full" src={avatar ? avatar : profile} onClick={() => uploadRef.current.click()}/>
+                    <button className="bg-citrus-rose px-5 py-2 rounded-lg text-md text-citrus-peach-light font-semibold cursor-pointer"
                         onClick={() => uploadRef.current.click()}
                     >
                         Select Image
