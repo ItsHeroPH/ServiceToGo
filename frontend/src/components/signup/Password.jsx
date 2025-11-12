@@ -49,7 +49,7 @@ export default function Password({ onNext = ({}) => {}}) {
                     <label className="block text-sm font-semibold text-citrus-rose">{error}</label>
                 )
             }
-            <button className={`${isLoading || (!hasMinLength && !hasUpperLower && !hasSymbol) ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} select-none w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
+            <button className={`${isLoading || !(hasMinLength && hasUpperLower && hasSymbol) ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} select-none w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
                 onClick={() => {
                     setIsLoading(true)
                     if(passwordsMatch) {
