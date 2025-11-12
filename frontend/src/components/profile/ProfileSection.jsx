@@ -199,7 +199,7 @@ export default function ProfileSection({ user }) {
                         <p className="text-md text-citrus-pink font-semibold">{user.birthday}</p>
                     </div>
                     <div className="flex flex-row gap-3">
-                        <button className={`${saving ? "bg-citrus-rose pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} select-none w-25 px-5 py-2 rounded-lg flex flex-row gap-2 justify-center items-center text-md text-citrus-peach-light font-semibold`}
+                        <button className={`${saving ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} select-none w-25 px-5 py-2 rounded-lg flex flex-row gap-2 justify-center items-center text-md text-citrus-peach-light font-semibold`}
                             onClick={async() => {
                                 if(isValid) {
                                     setSaving(true)
