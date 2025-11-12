@@ -360,7 +360,7 @@ app.post("/address/delete", async (req, res) => {
     const existing = await Address.findOne({ id, owner: req.user.id });
     if(!existing) return res.json({ status: 404, message: "Address Not Found!"});
     
-    logger.info("ADDRESS", `User ${user.id} deleted address ${existing.id}`);
+    logger.info("ADDRESS", `User ${req.user.id} deleted address ${existing.id}`);
 
     await Address.deleteOne({ id, owner: req.user.id });
     return res.json({ status: 200 });
