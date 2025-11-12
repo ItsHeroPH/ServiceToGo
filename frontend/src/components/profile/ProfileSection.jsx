@@ -133,6 +133,8 @@ export default function ProfileSection({ user }) {
                                 cropCanvas.width = 300;
                                 cropCanvas.height = 300;
                                 const ctx = cropCanvas.getContext("2d");
+                                ctx.fillStyle = "rgba(0,0,0,1)";
+                                ctx.fillRect(0, 0, 300, 300)
                                 ctx.drawImage(image, sx, sy, sSize, sSize, 0, 0, 300, 300);
 
                                 cropCanvas.toBlob(async (blob) => {
