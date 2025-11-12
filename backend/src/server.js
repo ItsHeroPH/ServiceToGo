@@ -73,7 +73,7 @@ app.post("/login", async (req, res, next) => {
         if (err) return next(err);
         if (!user) return res.json({ status: 401, message: "Invalid credentials" });
 
-        if(!req.body.code) return res.json({ status: 200, message: "Verification needed!" });
+        if(!req.body.code) return res.json({ status: 402, message: "Verification needed!" });
 
         req.login(user, (err) => {
             if (err) return next(err);

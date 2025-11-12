@@ -26,9 +26,9 @@ export default function Verify({ email, onNext = ({}) => {}}) {
                 onClick={async() => {
                     setIsLoading(true)
                     const code = input.current.value;
-                    const response = (await axios.post(`${import.meta.env.VITE_API_URL}/verify`, { email, code, remove: true }, { withCredentials: true })).data;
+                    const response = (await axios.post(`${import.meta.env.VITE_API_URL}/verify`, { email, code, remove: false }, { withCredentials: true })).data;
                     if(response.status == 200) {
-                        onNext()
+                        onNext({ code: code })
                     } else {
                         setIsLoading(false)
                         setHasError(true)
