@@ -198,6 +198,8 @@ app.post("/reset-password", async (req, res) => {
     await user.save();
     await OTP.deleteOne({ email: encryptedEmail, code: encryptedCode });
 
+    logger.info("AUTHENTICATOR", `User ${user.id} resets password`);
+
     return res.json({ status: 200 });
 })
 
@@ -310,6 +312,8 @@ app.post("/upload", async (req, res) => {
         await user.save();
     }
 
+    logger.info("FILES", `User ${user.id} upload image: ${file.id}`);
+
     return res.json({ status: 200, id: file.id })
 });
 
@@ -343,6 +347,7 @@ app.post("/address/add", async (req, res) => {
     });
 
     await newAddress.save();
+    logger.info("ADDRESS", `User ${user.id} added address ${newAddress.id}`);
 
     return res.json({ status: 200 });
 });
@@ -354,6 +359,8 @@ app.post("/address/delete", async (req, res) => {
     const existing = await Address.findOne({ id, owner: req.user.id });
     if(!existing) return res.json({ status: 404, message: "Address Not Found!"});
     
+    logger.info("ADDRESS", `User ${user.id} deleted address ${existing.id}`);
+
     await Address.deleteOne({ id, owner: req.user.id });
     return res.json({ status: 200 });
 })
