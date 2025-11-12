@@ -14,7 +14,7 @@ export default function Done({ data }) {
                 <FontAwesomeIcon className="text-citrus-rose" size="3x" icon={faClipboardCheck}/>
                 <h1 className="text-lg text-citrus-rose font-bold">Register Complete!</h1>
             </div>
-            <button className={`${isLoading ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`} onClick={async() => {
+            <button className={`${isLoading ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} select-none w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`} onClick={async() => {
                 setIsLoading(true)
                 const response = (await axios.post(`${import.meta.env.VITE_API_URL}/register`, { ...data }, { withCredentials: true })).data;
                 if(response.status === 201) {

@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import profile from "../../assets/blank_profile.png";
-import { faEdit, faSpinner, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faSpinner, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -206,7 +206,7 @@ export default function ProfileSection({ user }) {
                         <p className="text-md text-citrus-pink font-semibold">{user.birthday}</p>
                     </div>
                     <div className="flex flex-row gap-3">
-                        <button className="bg-citrus-rose w-25 px-5 py-2 rounded-lg flex flex-row gap-2 justify-center items-center text-md text-citrus-peach-light font-semibold cursor-pointer"
+                        <button className={`${isSaving ? "bg-citrus-rose pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} select-none w-25 px-5 py-2 rounded-lg flex flex-row gap-2 justify-center items-center text-md text-citrus-peach-light font-semibold`}
                             onClick={async() => {
                                 if(isValid) {
                                     setSaving(true)
@@ -218,16 +218,9 @@ export default function ProfileSection({ user }) {
                                 }
                             }}
                         >
-                            { saving ? (
-                                <>
-                                    <FontAwesomeIcon className="animate-spin" icon={faSpinner}/>
-                                    <p>Saving...</p>
-                                </>
-                            ) : (
-                                <p>Save</p>
-                            )}
+                            Saving
                         </button>
-                        <button className="w-40 px-5 py-2 rounded-lg bg-transparent text-citrus-rose outline outline-citrus-rose text-md font-semibold cursor-pointer"
+                        <button className="select-none w-40 px-5 py-2 rounded-lg bg-transparent text-citrus-rose outline outline-citrus-rose text-md font-semibold cursor-pointer"
                             onClick={async() => {
                                 const response = (await axios.get(`${import.meta.env.VITE_API_URL}/user/delete`, { withCredentials: true })).data;
                                 if(response.status === 200) return navigate("/login");
@@ -239,7 +232,7 @@ export default function ProfileSection({ user }) {
                 </div>
                 <div className="min-w-50 flex flex-col justify-center items-center gap-2">
                     <img className="w-30 rounded-full" src={avatar ? avatar : profile} onClick={() => uploadRef.current.click()}/>
-                    <button className="bg-citrus-rose px-5 py-2 rounded-lg text-md text-citrus-peach-light font-semibold cursor-pointer"
+                    <button className="select-none bg-citrus-rose px-5 py-2 rounded-lg text-md text-citrus-peach-light font-semibold cursor-pointer"
                         onClick={() => uploadRef.current.click()}
                     >
                         Select Image

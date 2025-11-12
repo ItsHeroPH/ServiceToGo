@@ -6,6 +6,7 @@ export default function Verify({ email, onNext = ({}) => {}}) {
     const input = useRef();
     const [hasError, setHasError] = useState(false);
     const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     return (
         <div className="flex flex-col gap-3">
@@ -21,20 +22,17 @@ export default function Verify({ email, onNext = ({}) => {}}) {
                     )
                 }
             </div>
-            <button className="bg-citrus-rose w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold cursor-pointer transition-all duration-500 hover:text-rose-300 hover:scale-105 hover:shadow-lg"
+            <button className={`${isLoading && input.current.value < 6 ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
                 onClick={async() => {
+                    setIsLoading(true);
                     const code = input.current.value;
-                    if(code.length === 6) {
-                        const response = (await axios.post(`${import.meta.env.VITE_API_URL}/verify`, { email, code, remove: false }, { withCredentials: true })).data;
-                        if(response.status == 200) {
-                            onNext({ code });
-                        } else {
-                            setHasError(true);
-                            setError(response.message);
-                        }
+                    const response = (await axios.post(`${import.meta.env.VITE_API_URL}/verify`, { email, code, remove: false }, { withCredentials: true })).data;
+                    if(response.status == 200) {
+                        onNext({ code });
                     } else {
+                        setIsLoading(false);
                         setHasError(true);
-                        setError("Please enter a valid 6-digits code.");
+                        setError(response.message);
                     }
                 }}
             >

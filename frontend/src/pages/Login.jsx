@@ -46,32 +46,21 @@ export default function Login() {
                                 <div>
                                     { hasError && <p className="text-sm text-rose-400 font-semibold">{error}</p>  }
                                     <button 
-                                        className={`${isLoading ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose pointer-events-auto cursor-pointer"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
+                                        className={`${!isLoading && ((email.length > 0 && password.length > 0) && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) ? "bg-citrus-rose cursor-pointer pointer-events-auto" : "bg-citrus-rose/50 pointer-events-none"} select-none w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
                                         onClick={
                                             async () => {
                                                 setIsLoading(true)
-                                                if(email.length > 0 && password.length > 0) {
-                                                    if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                                                        const response = await (await axios.post(`${import.meta.env.VITE_API_URL}/login`, { email, password }, { withCredentials: true })).data
-                                                        if(response.status === 200) {
-                                                            const sendcode = (await axios.post(`${import.meta.env.VITE_API_URL}/send-code`, { email })).data;
-                                                            if(sendcode.status === 200) {
-                                                                setIsLoading(false)
-                                                                setProgress(2)
-                                                            }
-                                                        } else {
-                                                            setIsLoading(false)
-                                                            setHasError(true)
-                                                            setError("Email or Password is incorrect.")
-                                                        }
-                                                    } else {
+                                                const response = await (await axios.post(`${import.meta.env.VITE_API_URL}/login`, { email, password }, { withCredentials: true })).data
+                                                if(response.status === 200) {
+                                                    const sendcode = (await axios.post(`${import.meta.env.VITE_API_URL}/send-code`, { email })).data;
+                                                    if(sendcode.status === 200) {
                                                         setIsLoading(false)
-                                                        setHasError(true)
-                                                        setError("Email is invalid.")
+                                                        setProgress(2)
                                                     }
                                                 } else {
+                                                    setIsLoading(false)
                                                     setHasError(true)
-                                                    setError("Please fill up the provided fields.")
+                                                    setError("Email or Password is incorrect.")
                                                 }
                                             }
                                         }>

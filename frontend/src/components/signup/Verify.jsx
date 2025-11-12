@@ -22,23 +22,17 @@ export default function Verify({ email, onNext = ({}) => {}}) {
                     )
                 }
             </div>
-            <button className={`${isLoading ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose pointer-events-auto cursor-pointer"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
+            <button className={`${isLoading && input.current.value < 6 ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose pointer-events-auto cursor-pointer"} select-none w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
                 onClick={async() => {
                     setIsLoading(true)
                     const code = input.current.value;
-                    if(code.length === 6) {
-                        const response = (await axios.post(`${import.meta.env.VITE_API_URL}/verify`, { email, code, remove: true }, { withCredentials: true })).data;
-                        if(response.status == 200) {
-                            onNext()
-                        } else {
-                            setIsLoading(false)
-                            setHasError(true)
-                            setError(response.message)
-                        }
+                    const response = (await axios.post(`${import.meta.env.VITE_API_URL}/verify`, { email, code, remove: true }, { withCredentials: true })).data;
+                    if(response.status == 200) {
+                        onNext()
                     } else {
                         setIsLoading(false)
-                        setHasError(true);
-                        setError("Please enter a valid 6-digits code.")
+                        setHasError(true)
+                        setError(response.message)
                     }
                 }}
             >

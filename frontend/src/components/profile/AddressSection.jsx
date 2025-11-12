@@ -266,7 +266,7 @@ function AddressEditor({ onClose = () => {}, onComplete = () => {} }) {
                         </div>
                     )
                 }
-                <button className={`${isValid && !isLoading ? "bg-citrus-rose cursor-pointer pointer-events-auto" : "bg-citrus-rose/50 pointer-events-none"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
+                <button className={`${isValid && !isLoading ? "bg-citrus-rose cursor-pointer pointer-events-auto" : "bg-citrus-rose/50 pointer-events-none"} select-none w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
                     onClick={async() => {
                         if(isValid) {
                             const response = (await axios.post(`${import.meta.env.VITE_API_URL}/address/add`, {

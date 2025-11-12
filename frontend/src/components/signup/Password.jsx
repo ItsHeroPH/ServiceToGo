@@ -9,6 +9,7 @@ export default function Password({ onNext = ({}) => {}}) {
     const [showPassword2, setShowPassword2] = useState(false);
     const [hasError, setHasError] = useState(false);
     const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const hasMinLength = password.length >= 8;
     const hasUpperLower = /(?=.*[a-z])(?=.*[A-Z])/.test(password);
@@ -48,18 +49,15 @@ export default function Password({ onNext = ({}) => {}}) {
                     <label className="block text-sm font-semibold text-citrus-rose">{error}</label>
                 )
             }
-            <button className="bg-citrus-rose w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold cursor-pointer transition-all duration-500 hover:text-rose-300 hover:scale-105 hover:shadow-lg"
+            <button className={`${isLoading || (!hasMinLength && !hasUpperLower && !hasSymbol) ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} select-none w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
                 onClick={() => {
-                    if(hasMinLength && hasUpperLower && hasSymbol) {
-                        if(passwordsMatch) {
-                            setHasError(false)
-                            onNext({ password })
-                        } else {
-                            setError("Your password is not matched.");
-                            setHasError(true);
-                        }
+                    setIsLoading(true)
+                    if(passwordsMatch) {
+                        setHasError(false)
+                        onNext({ password })
                     } else {
-                        setError("Your password is too weak.");
+                        setIsLoading(false)
+                        setError("Your password is not matched.");
                         setHasError(true);
                     }
                 }}>

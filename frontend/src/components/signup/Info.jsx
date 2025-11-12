@@ -50,16 +50,14 @@ export default function Info({ onNext = ({}) => {} }) {
                     setBirthday(e.target.value)
                 }} placeholder="Age"/>
             </div>
-            <button className={`${isValid && !isLoading ? "bg-citrus-rose cursor-pointer pointer-events-auto" : "bg-citrus-rose/50 pointer-events-none"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
+            <button className={`${isValid && !isLoading ? "bg-citrus-rose cursor-pointer pointer-events-auto" : "bg-citrus-rose/50 pointer-events-none"} select-none w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
                 onClick={async() => {
-                    if(isValid) {
-                        onNext({
-                            username,
-                            name,
-                            gender,
-                            birthday
-                        })
-                    }
+                    onNext({
+                        username,
+                        name,
+                        gender,
+                        birthday
+                    })
                 }}
             >
                 Next
