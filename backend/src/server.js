@@ -46,7 +46,7 @@ app.use(cors({
     credentials: true
 }));
 app.use(session({
-    store: ConnectMongo.create({ mongoUrl: process.env.MONGODB_URL, autoRemove: "disabled" }),
+    store: ConnectMongo.create({ mongoUrl: process.env.MONGODB_URL, autoRemove: "disabled", ttl: 60 * 60 * 24 * 30  }),
     secret: process.env.SESSION_SECRET_KEY,
     resave: false,
     saveUninitialized: false,
