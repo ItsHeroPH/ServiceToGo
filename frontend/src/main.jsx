@@ -43,9 +43,9 @@ const router = createBrowserRouter([
     ),
     HydrateFallback: () => <LoadingScreen/>,
     loader: async () => {
-      const userFetch = await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true });
-      if(userFetch.data.status == 409) return redirect("/login");
-      let userdata = userFetch.data.user;
+      const userFetch = (await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true })).data;
+      if(userFetch.status == 409) return redirect("/login");
+      let userdata = userFetch.user;
       if(userdata.avatar) {
         const avatar = (await axios.get(`${import.meta.env.VITE_API_URL}/images/${userdata.avatar}`, { withCredentials: true, responseType: "blob" })).data;
         return { user: {...userdata, avatar: URL.createObjectURL(avatar)}}
@@ -109,9 +109,9 @@ const router = createBrowserRouter([
     ),
     HydrateFallback: () => <LoadingScreen/>,
     loader: async () => {
-      const userFetch = await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true });
-      if(userFetch.data.status == 409) return redirect("/login");
-      let userdata = userFetch.data.user;
+      const userFetch = (await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true })).data;
+      if(userFetch.status == 409) return redirect("/login");
+      let userdata = userFetch.user;
       if(userdata.avatar) {
         const avatar = (await axios.get(`${import.meta.env.VITE_API_URL}/images/${userdata.avatar}`, { withCredentials: true, responseType: "blob" })).data;
         return { user: {...userdata, avatar: URL.createObjectURL(avatar)}}
@@ -137,7 +137,7 @@ const router = createBrowserRouter([
         const avatar = (await axios.get(`${import.meta.env.VITE_API_URL}/images/${userFetch.user.avatar}`, { withCredentials: true, responseType: "blob" })).data;
         userdata = {...userFetch.user, avatar: URL.createObjectURL(avatar)}
       } else {
-        userdata = userFetch.data.user;
+        userdata = userFetch.user;
       }
 
       const addressFetch = (await axios.get(`${import.meta.env.VITE_API_URL}/address`, { withCredentials: true })).data;
@@ -157,17 +157,17 @@ const router = createBrowserRouter([
     ),
     HydrateFallback: () => <LoadingScreen/>,
     loader: async () => {
-      const userFetch = await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true });
+      const userFetch = (await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true })).data;
       if(userFetch.data.status == 409) return redirect("/login");
 
-      let userdata = userFetch.data.user;
+      let userdata = userFetch.user;
       if(userdata.avatar) {
         const avatar = (await axios.get(`${import.meta.env.VITE_API_URL}/images/${userdata.avatar}`, { withCredentials: true, responseType: "blob" })).data;
         userdata = {...userdata, avatar: URL.createObjectURL(avatar)}
       }
       
-      const userListFetch = await axios.get(`${import.meta.env.VITE_API_URL}/users`, { withCredentials: true });
-      const users = userListFetch.data.users;
+      const userListFetch = (await axios.get(`${import.meta.env.VITE_API_URL}/users`, { withCredentials: true })).data;
+      const users = userListFetch.users;
 
       const usersAvatarPromise = users.map(async(user) => {
         if(user.avatar) {
@@ -189,8 +189,6 @@ const router = createBrowserRouter([
       });
       const usersAvatars = await Promise.all(usersAvatarPromise);
       const userMessages = await Promise.all(messagePromises);
-
-      console.log(usersAvatars)
 
       return { user: userdata, users: usersAvatars, msgs: userMessages }
     }
