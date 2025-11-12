@@ -22,7 +22,7 @@ export default function Verify({ email, onNext = ({}) => {}}) {
                     )
                 }
             </div>
-            <button className={`${isLoading && input.current.value < 6 ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
+            <button className={`${isLoading && input.current.value < 6 ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} select-none w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
                 onClick={async() => {
                     setIsLoading(true);
                     const code = input.current.value;
