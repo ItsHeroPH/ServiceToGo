@@ -28,7 +28,7 @@ export function initializePassport(passport) {
     passport.deserializeUser(async (id, done) => {
         try {
             const user = await User.findOne({ id });
-            if(!user) return done("User not found", false);
+            if(!user) return done(null, false);
             const decryptedUser = {
                 id: user.id,
                 email: decrypt(user.email),
