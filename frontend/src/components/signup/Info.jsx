@@ -41,7 +41,11 @@ export default function Info({ onNext = ({}) => {} }) {
             </div>
             <div>
                 <label className="block text-sm font-semibold text-citrus-orange">Date of Birth</label>
-                <input className="bg-slate-200 w-full outline-none px-3 py-1.5 rounded-lg text-md text-citrus-pink caret-citrus-pink font-semibold" type="date" max={new Date().toISOString().split("T")[0]} onChange={(e) => {
+                <input className="bg-slate-200 w-full outline-none px-3 py-1.5 rounded-lg text-md text-citrus-pink caret-citrus-pink font-semibold" type="date" max={()  => {
+                    const today = new Date();
+                    
+                    return new Date(today.getFullYear() - 16, today.getMonth, today.getDate()).toISOString().split("T")[0]
+                }} onChange={(e) => {
                     setBirthday(e.target.value)
                 }} placeholder="Age"/>
             </div>

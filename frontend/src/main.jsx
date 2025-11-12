@@ -158,7 +158,7 @@ const router = createBrowserRouter([
     HydrateFallback: () => <LoadingScreen/>,
     loader: async () => {
       const userFetch = (await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true })).data;
-      if(userFetch.data.status == 409) return redirect("/login");
+      if(userFetch.status == 409) return redirect("/login");
 
       let userdata = userFetch.user;
       if(userdata.avatar) {
