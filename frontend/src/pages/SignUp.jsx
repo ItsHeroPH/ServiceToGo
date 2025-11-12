@@ -23,7 +23,7 @@ export default function Login() {
         <>
             <div className="bg-citrus-rose w-screen h-screen overflow-y-scroll no-scrollbar p-5 flex flex-col items-center space-y-6">
                 <img className="w-52" src={logo}/>
-                <div className="bg-citrus-peach-light w-80 rounded-xl shadow-xl px-5 py-6 flex flex-col gap-3 transition-all duration-500 hover:scale-105 hover:shadow-2xl">
+                <div className="bg-citrus-peach-light w-80 rounded-xl shadow-xl px-5 py-6 flex flex-col gap-3">
                     <h1 className="text-xl text-citrus-rose font-bold cursor-default">Register</h1>
                     <Progress currentPage={page}/>
                     {

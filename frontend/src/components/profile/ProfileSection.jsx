@@ -29,24 +29,26 @@ export default function ProfileSection({ user }) {
         const canvasHeight = 300;
         canvasRef.current.width = canvasWidth;
         canvasRef.current.height = canvasHeight;
-
         ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-        ctx.fillStyle = "rgba(0,0,0,0.5)";
+        ctx.fillStyle = "rgba(0,0,0,1)";
         ctx.fillRect(0, 0, canvasWidth, canvasHeight)
-
         ctx.drawImage(image, imgPos.x, imgPos.y, imgPos.width, imgPos.height);
-
-        ctx.fillStyle = "rgba(0,0,0,0.5)";
-        const cropX = (300 - 300) / 2;
-        const cropY = (300 - 300) / 2;
-        ctx.fillRect(0, 0, 300, cropY);
-        ctx.fillRect(0, cropY + 300, 300, 300 - (cropY + 300));
-        ctx.fillRect(0, cropY, cropX, 300);
-        ctx.fillRect(cropX + 300, cropY, 300 - (cropX + 300), 300);
-
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(0, 0, canvasWidth, canvasHeight);
+        const centerX = canvasWidth / 2;
+        const centerY = canvasHeight / 2;
+        const radius = 150;
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.fill("evenodd");
+        ctx.restore();
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
         ctx.strokeStyle = "white";
         ctx.lineWidth = 2;
-        ctx.strokeRect(cropX, cropY, 300, 300);
+        ctx.stroke()
     }, [image, imgPos]);
 
 
@@ -88,11 +90,14 @@ export default function ProfileSection({ user }) {
                                 setDragging(false)
                             }}
                         >
-                            <button className="bg-slate-300 self-end px-2 py-1.5 rounded-full cursor-pointer text-citrus-rose transition-all duration-200 hover:bg-citrus-rose hover:text-citrus-peach-light"
-                                onClick={() => setIsCropModalOpen(false)}
-                            >
-                                <FontAwesomeIcon icon={faXmark}/>
-                            </button>
+                            <div className="w-full flex flex-row justify-between items-center">
+                                <h1 className="text-lg text-citrus-rose font-bold">Adjust your Picture</h1>
+                                <button className="bg-slate-300 self-end px-2 py-1.5 rounded-full cursor-pointer text-citrus-rose transition-all duration-200 hover:bg-citrus-rose hover:text-citrus-peach-light"
+                                    onClick={() => setIsCropModalOpen(false)}
+                                >
+                                    <FontAwesomeIcon icon={faXmark}/>
+                                </button>
+                            </div>
                             <canvas className="w-50" ref={canvasRef} 
                                 onMouseDown={(e) => {
                                     const rect = canvasRef.current.getBoundingClientRect();
@@ -113,7 +118,7 @@ export default function ProfileSection({ user }) {
                                     setOffset({ x: mouseX - imgPos.x, y: mouseY - imgPos.y });
                                 }}
                             />
-                            <button className="bg-citrus-rose px-5 py-2 rounded-lg text-md text-citrus-peach-light flex flex-row items-center gap-2 font-semibold cursor-pointer transition-all duration-300 hover:bg-transparent hover:text-citrus-rose hover:outline-2 hover:outline-citrus-rose" onClick={() => {
+                            <button className="bg-citrus-rose px-5 py-2 rounded-lg text-md text-citrus-peach-light flex flex-row items-center gap-2 font-semibold cursor-pointer" onClick={() => {
                                 setUploading(true)
                                 const cropX = (300 - 300) / 2;
                                 const cropY = (300 - 300) / 2;
@@ -201,7 +206,7 @@ export default function ProfileSection({ user }) {
                         <p className="text-md text-citrus-pink font-semibold">{user.birthday}</p>
                     </div>
                     <div className="flex flex-row gap-3">
-                        <button className="bg-citrus-rose w-25 px-5 py-2 rounded-lg flex flex-row gap-2 justify-center items-center text-md text-citrus-peach-light font-semibold cursor-pointer transition-all duration-300 hover:bg-transparent hover:text-citrus-rose hover:outline-2 hover:outline-citrus-rose"
+                        <button className="bg-citrus-rose w-25 px-5 py-2 rounded-lg flex flex-row gap-2 justify-center items-center text-md text-citrus-peach-light font-semibold cursor-pointer"
                             onClick={async() => {
                                 if(isValid) {
                                     setSaving(true)
@@ -222,7 +227,7 @@ export default function ProfileSection({ user }) {
                                 <p>Save</p>
                             )}
                         </button>
-                        <button className="w-40 px-5 py-2 rounded-lg bg-transparent text-citrus-rose outline outline-citrus-rose text-md font-semibold cursor-pointer transition-all duration-300 hover:bg-citrus-rose hover:text-citrus-peach-light"
+                        <button className="w-40 px-5 py-2 rounded-lg bg-transparent text-citrus-rose outline outline-citrus-rose text-md font-semibold cursor-pointer"
                             onClick={async() => {
                                 const response = (await axios.get(`${import.meta.env.VITE_API_URL}/user/delete`, { withCredentials: true })).data;
                                 if(response.status === 200) return navigate("/login");
@@ -249,6 +254,7 @@ export default function ProfileSection({ user }) {
                     <input ref={uploadRef} className="hidden" type="file" accept="image/png, image/jpeg" slot="1"
                         onChange={async (e) => {
                             const file = e.target.files[0];
+                            if(!file) return;
                             if(!["image/png", "image/jpeg"].includes(file.type)) return;
                             if(file.size > 2 * 1024 * 1024) return;
                             
@@ -265,6 +271,7 @@ export default function ProfileSection({ user }) {
                                 });
                             };
                             setIsCropModalOpen(true)
+                            uploadRef.current.value = ""
                         }}
                     />
                 </div>

@@ -44,9 +44,9 @@ export default function Password({ onNext = ({}) => {}}) {
                 </div>
             </div>
             {
-                hasError ? (
+                hasError && (
                     <label className="block text-sm font-semibold text-citrus-rose">{error}</label>
-                ) : (<></>)
+                )
             }
             <button className="bg-citrus-rose w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold cursor-pointer transition-all duration-500 hover:text-rose-300 hover:scale-105 hover:shadow-lg"
                 onClick={() => {

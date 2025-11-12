@@ -25,11 +25,11 @@ function User({ user, onSelectUser, latestMessage }) {
                 <div className="flex gap-1">
                     <p className="text-xs text-slate-500 whitespace-normal overflow-hidden break-all text-ellipsis line-clamp-1">{latestMessage ? `${latestMessage.from === user.id ? user.name : "You"}: ${latestMessage.message}` : "No messages yet"}</p>
                     {
-                        latestMessage ? (
+                        latestMessage && (
                             <p className="text-xs text-slate-500 ">• {
                                 formatDate(new Date(latestMessage.createdAt), true)
                             }</p>
-                        ): (<></>)
+                        )
                     }
                 </div>
             </div>

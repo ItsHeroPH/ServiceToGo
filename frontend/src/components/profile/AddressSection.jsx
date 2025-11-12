@@ -37,6 +37,7 @@ export default function AddressSection() {
 
 function Address({ index, address }) {
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
     return (
         <div className="w-full bg-slate-100 shadow-lg p-5 rounded-lg flex flex-col md:flex-row gap-2 justify-between md:items-center">
@@ -45,7 +46,8 @@ function Address({ index, address }) {
                 <p className="text-md text-slate-500 font-semibold">{address.address}, {address.barangay}, {address.city}, {address.province ? `${address.province}, ${address.region}` : address.region}</p>
             </div>
             <div>
-                <button className="bg-citrus-rose px-2 py-1 rounded-lg text-md text-citrus-peach-light font-semibold cursor-pointer" onClick={async() => {
+                <button className={`${isLoading ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} px-2 py-1 rounded-lg text-md text-citrus-peach-light font-semibold`} onClick={async() => {
+                    setIsLoading(true)
                     const response = (await axios.post(`${import.meta.env.VITE_API_URL}/address/delete`, { id: address.id }, { withCredentials: true })).data;
                     if(response.status == 200) navigate("/me/address", { replace: true })
                 }}>Delete</button>
@@ -69,6 +71,8 @@ function AddressEditor({ onClose = () => {}, onComplete = () => {} }) {
     const [selectedCity, setSelectedCity] = useState("");
     const [selectedBarangay, setSelectedBarangay] = useState("");
     const [address, setAddress] = useState("");
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const isValid =  selectedRegion && (provinces.length > 0 ? selectedProvince : true) && selectedCity && selectedBarangay && address;
 
@@ -262,7 +266,7 @@ function AddressEditor({ onClose = () => {}, onComplete = () => {} }) {
                         </div>
                     )
                 }
-                <button className={`${isValid ? "bg-citrus-rose cursor-pointer transition-all duration-500 hover:text-rose-300 hover:scale-105 hover:shadow-lg" : "bg-citrus-rose/50"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
+                <button className={`${isValid && !isLoading ? "bg-citrus-rose cursor-pointer pointer-events-auto" : "bg-citrus-rose/50 pointer-events-none"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
                     onClick={async() => {
                         if(isValid) {
                             const response = (await axios.post(`${import.meta.env.VITE_API_URL}/address/add`, {

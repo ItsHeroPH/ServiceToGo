@@ -1,10 +1,12 @@
 import { faClipboardCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Done({ data }) {
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
     return (
         <div className="flex flex-col gap-3 items-center">
@@ -12,11 +14,14 @@ export default function Done({ data }) {
                 <FontAwesomeIcon className="text-citrus-rose" size="3x" icon={faClipboardCheck}/>
                 <h1 className="text-lg text-citrus-rose font-bold">Password Reset Complete</h1>
             </div>
-            <button className="bg-citrus-rose w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold cursor-pointer transition-all duration-500 hover:text-rose-300 hover:scale-105 hover:shadow-lg" onClick={async() => {
+            <button className={`${isLoading ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`} onClick={async() => {
+                setIsLoading(true)
                 const response = (await axios.post(`${import.meta.env.VITE_API_URL}/reset-password`, { ...data }, { withCredentials: true })).data;
                 if(response.status === 200) {
                     const login = (await axios.post(`${import.meta.env.VITE_API_URL}/login`, { email: data.email, password: data.password }, { withCredentials: true })).data;
-                    if(login.status === 200) return navigate("/home");
+                    if(login.status === 200) {
+                        return navigate("/home");
+                    }
                 }
             }}>
                 Sign In

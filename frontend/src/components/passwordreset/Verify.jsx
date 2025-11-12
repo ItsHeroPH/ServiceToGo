@@ -16,9 +16,9 @@ export default function Verify({ email, onNext = ({}) => {}}) {
                     if(hasError) setHasError(false);
                 }} placeholder="Code"/>
                 {
-                    hasError ? (
+                    hasError && (
                         <label className="block text-sm font-semibold text-citrus-rose">{error}</label>
-                    ) : (<></>)
+                    )
                 }
             </div>
             <button className="bg-citrus-rose w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold cursor-pointer transition-all duration-500 hover:text-rose-300 hover:scale-105 hover:shadow-lg"
@@ -27,21 +27,21 @@ export default function Verify({ email, onNext = ({}) => {}}) {
                     if(code.length === 6) {
                         const response = (await axios.post(`${import.meta.env.VITE_API_URL}/verify`, { email, code, remove: false }, { withCredentials: true })).data;
                         if(response.status == 200) {
-                            onNext({ code })
+                            onNext({ code });
                         } else {
-                            setHasError(true)
-                            setError(response.message)
+                            setHasError(true);
+                            setError(response.message);
                         }
                     } else {
                         setHasError(true);
-                        setError("Please enter a valid 6-digits code.")
+                        setError("Please enter a valid 6-digits code.");
                     }
                 }}
             >
                 Verify
             </button>
             <div className="select-none text-sm text-citrus-rose font-bold cursor-pointer hover:underline" onClick={async () => {
-                await axios.post(`${import.meta.env.VITE_API_URL}/send-code`, { email }, { withCredentials: true })
+                await axios.post(`${import.meta.env.VITE_API_URL}/send-code`, { email }, { withCredentials: true });
             }}>Resend Code</div>
         </div>
     )

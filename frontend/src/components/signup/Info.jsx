@@ -5,6 +5,7 @@ export default function Info({ onNext = ({}) => {} }) {
     const [name, setName] = useState("");
     const [gender, setGender] = useState("");
     const [birthday, setBirthday] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const isValid = username && name && gender && birthday;
     
@@ -49,7 +50,7 @@ export default function Info({ onNext = ({}) => {} }) {
                     setBirthday(e.target.value)
                 }} placeholder="Age"/>
             </div>
-            <button className={`${isValid ? "bg-citrus-rose cursor-pointer transition-all duration-500 hover:text-rose-300 hover:scale-105 hover:shadow-lg" : "bg-citrus-rose/50"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
+            <button className={`${isValid && !isLoading ? "bg-citrus-rose cursor-pointer pointer-events-auto" : "bg-citrus-rose/50 pointer-events-none"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
                 onClick={async() => {
                     if(isValid) {
                         onNext({

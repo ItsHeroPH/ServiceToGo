@@ -6,6 +6,7 @@ export default function Email({ onNext = ({}) => {}}) {
     const [isValid, setIsValid] = useState(false);
     const [hasError, setHasError] = useState(false);
     const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     return (
         <div className="flex flex-col gap-3">
@@ -29,19 +30,21 @@ export default function Email({ onNext = ({}) => {}}) {
                     setEmail(email)
                 }} placeholder="Email" value={email}/>
                 {
-                    hasError ? (
+                    hasError && (
                         <label className="block text-sm font-semibold text-citrus-rose">{error}</label>
-                    ) : (<></>)
+                    )
                 }
             </div>
-            <button className={`${isValid ? "bg-citrus-rose cursor-pointer transition-all duration-500 hover:text-rose-300 hover:scale-105 hover:shadow-lg" : "bg-citrus-rose/50"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
+            <button className={`${isValid && !isLoading ? "bg-citrus-rose cursor-pointer pointer-events-auto" : "bg-citrus-rose/50 pointer-events-none"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
                 onClick={async() => {
                     if(isValid) {
+                        setIsLoading(true)
                         const response = (await axios.post(`${import.meta.env.VITE_API_URL}/register`, { email }, { withCredentials: true })).data;
 
                         if(response.status == 422) {
                             onNext({ email })
                         } else {
+                            setIsLoading(false)
                             setHasError(true)
                             setError("You've enter an existing email.")
                         }
