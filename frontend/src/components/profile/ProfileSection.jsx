@@ -1,10 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import profile from "../../assets/blank_profile.png";
-import { faSpinner, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import Verify from "../signup/Verify";
 
 export default function ProfileSection({ user }) {
     const navigate = useNavigate()
@@ -12,6 +13,7 @@ export default function ProfileSection({ user }) {
     const canvasRef = useRef(null);
     const [image, setImage] = useState(null);
     const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [name, setName] = useState(user.name);
     const [avatar, setAvatar] = useState(user.avatar);
     const [imgPos, setImgPos] = useState({ x: 0, y: 0, width: 0, height: 0 });
@@ -19,6 +21,8 @@ export default function ProfileSection({ user }) {
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const [uploading, setUploading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [deleteProgress, setDeleteProgress] = useState(0);
 
     const isValid = name;
 
@@ -55,9 +59,63 @@ export default function ProfileSection({ user }) {
     return (
         <div className="bg-citrus-peach-light w-full h-full py-5 px-6 rounded-lg flex flex-col">
             {
+                isDeleteModalOpen && (
+                    <div className="fixed bg-black/20 w-screen h-screen top-0 bottom-0 left-0 right-0 z-50 flex justify-center items-center" onClick={() => {
+                        setIsDeleteModalOpen(false)
+                    }}>
+                        <div className="bg-citrus-peach-light w-70 h-fit rounded-lg shadow-xl p-5 z-60 flex flex-col gap-5" onClick={(e) => {
+                            e.stopPropagation()
+                        }}>
+                            {
+                                deleteProgress == 0 && (
+                                    <>
+                                        <div className="self-start">
+                                            <h1 className="text-lg/4 text-citrus-rose font-bold">Are you sure you want to delete your account?</h1>
+                                            <p className="text-md text-slate-600 mt-3">This action is irreversible.</p>
+                                        </div>
+                                        <div className="flex flex-row items-center gap-3 self-end">
+                                            <button className={`${deleting ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} select-none w-25 px-5 py-2 rounded-lg flex flex-row gap-2 justify-center items-center text-md text-citrus-peach-light font-semibold`} 
+                                                onClick={async() => {
+                                                    setDeleting(true);
+                                                    const response = (await axios.post(`${import.meta.env.VITE_API_URL}/send-code`, { email: user.email }, { withCredentials: true })).data;
+                                                    if(response.status == 200) {
+                                                        setDeleting(false)
+                                                        setDeleteProgress(1)
+                                                    }
+                                                }}
+                                            >
+                                                Delete
+                                            </button>
+                                            <button className="select-none w-25 px-5 py-2 rounded-lg bg-transparent text-citrus-rose outline outline-citrus-rose text-md font-semibold cursor-pointer" onClick={() => {
+                                                setIsDeleteModalOpen(false);
+                                            }}>
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </>
+                                )
+                            }
+                            {
+                                deleteProgress == 1 && (
+                                    <Verify email={user.email} onNext={async() => {
+                                        const response = (await axios.get(`${import.meta.env.VITE_API_URL}/user/delete`, { withCredentials: true })).data;
+                                        if(response.status === 200) return navigate("/login");
+                                    }}/>
+                                )
+                            }
+                        </div>
+                    </div>
+                )
+            }
+            {
                 isCropModalOpen && image && (
-                    <div className="fixed bg-black/20 w-screen h-screen top-0 bottom-0 left-0 right-0 z-50 flex justify-center items-center">
-                        <div className="bg-slate-200 w-70 h-85 rounded-lg shadow-xl p-5 flex flex-col gap-5 justify-center items-center"
+                    <div className="fixed bg-black/20 w-screen h-screen top-0 bottom-0 left-0 right-0 z-50 flex justify-center items-center" onClick={() => {
+                        setIsCropModalOpen(false)
+                    }}>
+                        <div className="bg-citrus-peach-light w-70 h-85 rounded-lg shadow-xl p-5 flex flex-col gap-5 justify-center items-center"
+                            onClick={(e) => {
+                                e.stopPropagation()
+                            }}
                             onMouseMove={(e) => {
                                 if (!dragging) return;
                                 const rect = canvasRef.current.getBoundingClientRect();
@@ -217,8 +275,8 @@ export default function ProfileSection({ user }) {
                         </button>
                         <button className="select-none w-40 px-5 py-2 rounded-lg bg-transparent text-citrus-rose outline outline-citrus-rose text-md font-semibold cursor-pointer"
                             onClick={async() => {
-                                const response = (await axios.get(`${import.meta.env.VITE_API_URL}/user/delete`, { withCredentials: true })).data;
-                                if(response.status === 200) return navigate("/login");
+                                setIsDeleteModalOpen(true)
+                                setDeleteProgress(0)
                             }}
                         >
                             Delete Account
