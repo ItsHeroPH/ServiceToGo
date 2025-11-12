@@ -18,7 +18,6 @@ import OTP from "./database/otp.js";
 import Message from "./database/message.js";
 import Files from "./database/files.js";
 import Address from "./database/address.js";
-import message from "./database/message.js";
 
 const app = express();
 const server = http.createServer(app);

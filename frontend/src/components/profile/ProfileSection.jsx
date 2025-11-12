@@ -271,7 +271,7 @@ export default function ProfileSection({ user }) {
                                 }
                             }}
                         >
-                            Saving
+                            Save
                         </button>
                         <button className="select-none w-40 px-5 py-2 rounded-lg bg-transparent text-citrus-rose outline outline-citrus-rose text-md font-semibold cursor-pointer"
                             onClick={async() => {
