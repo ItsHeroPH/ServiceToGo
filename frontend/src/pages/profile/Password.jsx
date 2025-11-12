@@ -3,11 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, lazy } from "react";
 import logo from "../../assets/logo.png";
 import { useLoaderData, useNavigate } from "react-router-dom";
+import PasswordSection from "../../components/profile/PasswordSection";
 
 const UserNav = lazy(() => import("../../components/UserNav"));
 const SideBar = lazy(() => import("../../components/profile/Sidebar"));
-
-import AddressSection from "../../components/profile/AddressSection";
 
 export default function Profile() {
     const navigate = useNavigate();
@@ -29,7 +28,7 @@ export default function Profile() {
             </div>
             <div className="w-full h-full px-2 flex flex-row gap-2 relative overflow-hidden">
                 <SideBar showSidebar={showSidebar} setShowSidebar={setShowSideBar}/>
-                <AddressSection />
+                <PasswordSection/>
             </div>
         </div>
     )

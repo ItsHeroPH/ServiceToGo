@@ -13,6 +13,7 @@ const PasswordReset = lazy(() => import("./pages/PasswordReset"));
 const Chats = lazy(() => import("./pages/Chats"));
 const Profile = lazy(() => import("./pages/profile/Profile"));
 const Address = lazy(() => import("./pages/profile/Address"));
+const Password = lazy(() => import("./pages/profile/Password"));
 
 const router = createBrowserRouter([
   {
@@ -152,6 +153,27 @@ const router = createBrowserRouter([
       
 
       return { user: userdata, addresses: addressFetch.addresses }
+    }
+  },
+  {
+    path: "/me/password",
+    element: (
+      <Suspense fallback={
+        <LoadingScreen/>
+      }>
+        <Password />
+      </Suspense>
+    ),
+    HydrateFallback: () => <LoadingScreen/>,
+    loader: async () => {
+      const userFetch = (await axios.get(`${import.meta.env.VITE_API_URL}/user`, { withCredentials: true })).data;
+      if(userFetch.status == 409) return redirect("/login");
+      if(userFetch.user.avatar) {
+        const avatar = (await axios.get(`${import.meta.env.VITE_API_URL}/images/${userFetch.user.avatar}`, { withCredentials: true, responseType: "blob" })).data;
+        return { user: {...userFetch.user, avatar: URL.createObjectURL(avatar)} }
+      } else {
+        return { user: userFetch.user };
+      }
     }
   },
   {
