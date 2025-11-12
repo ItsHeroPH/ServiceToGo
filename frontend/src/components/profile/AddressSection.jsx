@@ -39,7 +39,7 @@ function Address({ index, address }) {
     const navigate = useNavigate();
 
     return (
-        <div className="w-full bg-slate-100 shadow-lg p-5 rounded-lg flex flex-col md:flex-row gap-2 justify-between items-center">
+        <div className="w-full bg-slate-100 shadow-lg p-5 rounded-lg flex flex-col md:flex-row gap-2 justify-between md:items-center">
             <div>
                 <h1 className="text-lg text-citrus-rose font-bold">Address {index + 1}</h1>
                 <p className="text-md text-slate-500 font-semibold">{address.address}, {address.barangay}, {address.city}, {address.province ? `${address.province}, ${address.region}` : address.region}</p>

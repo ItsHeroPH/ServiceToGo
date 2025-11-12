@@ -29,9 +29,12 @@ export default defineConfig(({ mode }) => {
       host: true,
       port: 4173,
       strictPort: true,
-      allowedHosts: ['servicetogo.store', 'www.servicetogo.store']
+      allowedHosts: env.HOST_DOMAIN.split(",")
     },
     preview: {
+      headers: {
+        'Cache-Control': 'no-store',
+      },
       proxy: {
         "/api" : {
           target: env.VITE_API_URL,
@@ -47,7 +50,7 @@ export default defineConfig(({ mode }) => {
       host: true,
       port: 4173,
       strictPort: true,
-      allowedHosts: ['servicetogo.store', 'www.servicetogo.store']
+      allowedHosts: env.HOST_DOMAIN.split(",")
     },
     build: {
       modulePreload: true,

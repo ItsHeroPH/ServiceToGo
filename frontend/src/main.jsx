@@ -99,6 +99,14 @@ const router = createBrowserRouter([
     }
   },
   {
+    path: "/me",
+    element: <LoadingScreen/>,
+    HydrateFallback: () => <LoadingScreen/>,
+    loader: async() => {
+      return redirect("/me/profile");
+    }
+  },
+  {
     path: "/me/profile",
     element: (
       <Suspense fallback={
