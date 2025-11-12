@@ -6,7 +6,6 @@ export default function Info({ onNext = ({}) => {} }) {
     const [gender, setGender] = useState("");
     const [birthday, setBirthday] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const today = new Date();
 
     const isValid = username && name && gender && birthday;
     
@@ -43,9 +42,11 @@ export default function Info({ onNext = ({}) => {} }) {
             </div>
             <div>
                 <label className="block text-sm font-semibold text-citrus-orange">Date of Birth</label>
-                <input className="bg-slate-200 w-full outline-none px-3 py-1.5 rounded-lg text-md text-citrus-pink caret-citrus-pink font-semibold" type="date" max={
-                    new Date(today.getFullYear() - 16, today.getMonth, today.getDate()).toISOString().split("T")[0]
-                } onChange={(e) => {
+                <input className="bg-slate-200 w-full outline-none px-3 py-1.5 rounded-lg text-md text-citrus-pink caret-citrus-pink font-semibold" type="date" max={(() => {
+                    const date = new Date()
+                    date.setFullYear(new Date().getFullYear() - 16);
+                    return date.toISOString().split("T")[0];
+                })()} onChange={(e) => {
                     setBirthday(e.target.value)
                 }} placeholder="Age"/>
             </div>
