@@ -19,7 +19,7 @@ export default function Done({ data }) {
                 const response = (await axios.post(`${import.meta.env.VITE_API_URL}/register`, { ...data }, { withCredentials: true })).data;
                 if(response.status === 201) {
                     const login = (await axios.post(`${import.meta.env.VITE_API_URL}/login`, { email: data.email, password: data.password, code: data.code }, { withCredentials: true })).data;
-                    if(login.status === 209) return navigate("/home");
+                    if(login.status === 200) return navigate("/home");
                 }
             }}>
                 Sign In
