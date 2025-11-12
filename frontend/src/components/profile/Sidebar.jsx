@@ -19,7 +19,7 @@ export default function SideBar({ showSidebar, setShowSidebar }) {
                 <div className="w-[90%] h-0.5 bg-slate-400/50 my-3"></div>
                 <NavItem onClick={() => navigate("/me/profile")}>Profile</NavItem>
                 <NavItem onClick={() => navigate("/me/address")}>Addresses</NavItem>
-                <NavItem onClick={() => navigate("/me/change-password")}>Change Password</NavItem>
+                <NavItem onClick={() => navigate("/me/password")}>Change Password</NavItem>
                 <NavItem onClick={() => navigate("/me/services")}>My Services</NavItem>
                 <NavItem onClick={() => navigate("/me/purchases")}>My Purchases</NavItem>
             </div>
@@ -29,7 +29,7 @@ export default function SideBar({ showSidebar, setShowSidebar }) {
 
 function NavItem({ onClick, children }) {
     return (
-        <div className="w-full px-4 py-2 cursor-pointer text-lg text-citrus-pink font-semibold hover:bg-citrus-orange/10 transitiol-all duration-200" onClick={onClick}>
+        <div className="select-none w-full px-4 py-2 cursor-pointer text-lg text-citrus-pink font-semibold hover:bg-citrus-orange/10 transitiol-all duration-200" onClick={onClick}>
             {children}
         </div>
     )

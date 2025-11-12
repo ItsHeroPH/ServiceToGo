@@ -21,7 +21,7 @@ function User({ user, onSelectUser, latestMessage }) {
         <div className="w-full h-15 flex flex-row items-center gap-2 cursor-pointer" onClick={() => onSelectUser(user)}>
             <img className="min-w-10 w-10 max-w-10 rounded-full" src={user.avatar ? user.avatar : profile}/>
             <div className="w-full max-h-full flex flex-col overflow-hidden">
-                <h1 className="text-lg text-citrus-orange font-bold truncate">{user.name}</h1>
+                <h1 className="select-none text-lg text-citrus-orange font-bold truncate">{user.name}</h1>
                 <div className="flex gap-1">
                     <p className="text-xs text-slate-500 whitespace-normal overflow-hidden break-all text-ellipsis line-clamp-1">{latestMessage ? `${latestMessage.from === user.id ? user.name : "You"}: ${latestMessage.message}` : "No messages yet"}</p>
                     {

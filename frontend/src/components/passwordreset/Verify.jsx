@@ -40,7 +40,7 @@ export default function Verify({ email, onNext = ({}) => {}}) {
             >
                 Verify
             </button>
-            <div className="text-sm text-citrus-rose font-bold cursor-pointer hover:underline" onClick={async () => {
+            <div className="select-none text-sm text-citrus-rose font-bold cursor-pointer hover:underline" onClick={async () => {
                 await axios.post(`${import.meta.env.VITE_API_URL}/send-code`, { email }, { withCredentials: true })
             }}>Resend Code</div>
         </div>

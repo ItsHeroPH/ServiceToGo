@@ -16,7 +16,7 @@ export default function UserNav({ user }) {
             <div className="flex flex-row items-center gap-1 cursor-pointer" onClick={() => setShowUserNav(!showUserNav)}>
                 <img className="min-w-7 max-w-7 rounded-full" src={user.avatar ? user.avatar : profile}/>
                 <div className="flex flex-col">
-                    <p className="text-md/6 text-citrus-peach-light font-bold hidden sm:block overflow-hidden break-all text-ellipsis line-clamp-1 truncate">{user.name}</p>
+                    <p className="select-none text-md/6 text-citrus-peach-light font-bold hidden sm:block overflow-hidden break-all text-ellipsis line-clamp-1 truncate">{user.name}</p>
                 </div>
                 <FontAwesomeIcon className={`text-citrus-peach-light transition-all duration-300 ${showUserNav ? "rotate-180" : "rotate-0"}`} icon={faAngleUp}/>
             </div>
@@ -53,7 +53,7 @@ export default function UserNav({ user }) {
 
 function Link({ onClick = () => {}, children }) {
     return (
-        <div className="w-full py-2 px-4 text-md text-slate-500 font-semibold cursor-pointer transition-all duration-500 hover:text-citrus-pink hover:bg-slate-100" onClick={onClick}>
+        <div className="select-none w-full py-2 px-4 text-md text-slate-500 font-semibold cursor-pointer transition-all duration-500 hover:text-citrus-pink hover:bg-slate-100" onClick={onClick}>
             {children}
         </div>
     )
