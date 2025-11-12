@@ -14,6 +14,9 @@ export default defineConfig(({ mode }) => {
       obfuscatorPlugin()
     ],
     server: {
+      headers: {
+        'Cache-Control': 'no-store',
+      },
       proxy: {
         "/api" : {
           target: env.VITE_API_URL,
