@@ -107,7 +107,7 @@ app.post("/register", async (req, res) => {
     });
     await user.save();
 
-    logger.info("AUTHENTICATOR", "A new user registered: " + user.id);
+    logger.info("USER", "A new user registered: " + user.id);
     res.json({ status: 201, message: "User registered successfully!" });
 })
 
@@ -227,6 +227,7 @@ app.post("/user/edit", async (req, res) => {
     if(name) user.name = encrypt(name);
 
     await user.save();
+    logger.info("USER", `User ${req.user.id} updated.`);
 
     return res.json({ status: 200 });
 })
@@ -250,7 +251,7 @@ app.get("/user/delete", async (req, res, next) => {
         await Files.deleteMany({ owner: user.id })
         await Address.deleteMany({ owner: user.id })
 
-        logger.info("AUTHENTICATOR", "User " + user.id + " deleted.");
+        logger.info("USER", "User " + user.id + " deleted.");
         res.json({ status: 200, message: "Data deleted" });
     })
 })
@@ -312,7 +313,7 @@ app.post("/upload", async (req, res) => {
         await user.save();
     }
 
-    logger.info("FILES", `User ${user.id} upload image: ${file.id}`);
+    logger.info("FILES", `User ${req.user.id} upload image: ${file.id}`);
 
     return res.json({ status: 200, id: file.id })
 });
@@ -347,7 +348,7 @@ app.post("/address/add", async (req, res) => {
     });
 
     await newAddress.save();
-    logger.info("ADDRESS", `User ${user.id} added address ${newAddress.id}`);
+    logger.info("ADDRESS", `User ${req.user.id} added address ${newAddress.id}`);
 
     return res.json({ status: 200 });
 });
