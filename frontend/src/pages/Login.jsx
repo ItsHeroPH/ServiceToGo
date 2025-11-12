@@ -51,7 +51,7 @@ export default function Login() {
                                             async () => {
                                                 setIsLoading(true)
                                                 const response = await (await axios.post(`${import.meta.env.VITE_API_URL}/login`, { email, password }, { withCredentials: true })).data
-                                                if(response.status === 200) {
+                                                if(response.status === 402) {
                                                     const sendcode = (await axios.post(`${import.meta.env.VITE_API_URL}/send-code`, { email })).data;
                                                     if(sendcode.status === 200) {
                                                         setIsLoading(false)
