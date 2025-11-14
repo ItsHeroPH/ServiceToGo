@@ -60,7 +60,7 @@ app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
-    if(process.env.FRONTEND_URL.split(",").includes(req.headers.origin)) return res.status(401).send("Unauthorized Access!");
+    if(!process.env.FRONTEND_URL.split(",").includes(req.headers.origin)) return res.status(401).send("Unauthorized Access!");
 
     next()
 })
