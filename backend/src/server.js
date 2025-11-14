@@ -23,7 +23,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: [process.env.FRONTEND_URL],
+        origin: process.env.FRONTEND_URL.split(","),
         methods: ["GET", "POST"],
         credentials: true
     }
@@ -39,7 +39,7 @@ initializePassport(passport)
 app.set("trust proxy", 1);
 app.use(cookieParser())
 app.use(cors({ 
-    origin: [process.env.FRONTEND_URL], 
+    origin: process.env.FRONTEND_URL.split(","), 
     methods: ['GET','POST','PUT'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
@@ -60,7 +60,7 @@ app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
-    if(req.headers.origin !== process.env.FRONTEND_URL) return res.status(401).send("Unauthorized Access!");
+    if(process.env.FRONTEND_URL.split(",").includes(req.headers.origin)) return res.status(401).send("Unauthorized Access!");
 
     next()
 })
