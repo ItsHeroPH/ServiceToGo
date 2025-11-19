@@ -1,41 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-    --color-citrus-peach-light: #FAD9C1;
-    --color-citrus-pink-light: #F8B9C9;
-    --color-citrus-rose-light: #F7A7B7;
-    --color-citrus-orange-cream: #F5A45B;
-    --color-citrus-lime-light: #D4E3A6;
-
-    --color-citrus-coral: #F57860;
-    --color-citrus-rose: #E94857;
-    --color-citrus-red: #D7373A;
-    --color-citrus-orange: #F58C22;
-    --color-citrus-green-light: #B6D881;
-
-    --color-citrus-salmon: #F56A60;
-    --color-citrus-pink: #F45E8E;
-    --color-citrus-crimson: #B8332E;
-    --color-citrus-tangerine: #F47B21;
-    --color-citrus-yellow: #F8D94C;
-
-    --color-citrus-red-bright: #F64B4B;
-    --color-citrus-hot-pink: #F25C8F;
-    --color-citrus-blood-orange: #C93627;
-    --color-citrus-mango: #F59A30;
-    --color-citrus-lemon: #F7E06A;
-
-    --color-citrus-green-pale: #D2E39A;
-    --color-citrus-green-medium: #A9D067;
-    --color-citrus-green: #7EBE4B;
-    --color-citrus-green-deep: #4E8C2D;
-    --color-citrus-green-dark: #355D1A;
-
-    --color-citrus-olive-light: #C5CF9B;
-    --color-citrus-olive: #A3B76F;
-    --color-citrus-forest: #6A8C3F;
-    --color-citrus-deep-forest: #456026;
-    --color-citrus-moss: #324C19;
+  --breakpoint-xs: 30rem;
+  --color-citrus-rose: #E94857;
 }
 
 .no-scrollbar::-webkit-scrollbar {

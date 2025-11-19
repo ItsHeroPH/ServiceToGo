@@ -9,6 +9,7 @@ import ConnectMongo from "connect-mongo";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { Server } from "socket.io";
+import axios from "axios";
 
 import { initializePassport } from "./auth/passport.js";
 import { sendEmail } from "./util/mailer.js";
@@ -16,7 +17,7 @@ import { encrypt, decrypt } from "./util/encrypt.js";
 import User from "./database/user.js";
 import OTP from "./database/otp.js";
 import Message from "./database/message.js";
-import Files from "./database/files.js";
+import Files from "./database/Files.js";
 import Address from "./database/address.js";
 
 const app = express();
@@ -68,11 +69,16 @@ app.use((req, res, next) => {
 app.post("/login", async (req, res, next) => {
     if(req.isAuthenticated()) return res.json({ status: 409, message: "Already Authenticated!"});
 
-    passport.authenticate("local", (err, user, info) => {
+    passport.authenticate("local", async(err, user, info) => {
         if (err) return next(err);
         if (!user) return res.json({ status: 401, message: "Invalid credentials" });
 
-        if(!req.body.code) return res.json({ status: 402, message: "Verification needed!" });
+        if(!req.body.code) {
+            await axios.post(`${process.env.BACKEND_URL}/send-code`, { email: decrypt(user.email)}, { headers: {
+                "Origin": req.headers.origin
+            }});
+            return res.json({ status: 402, email: decrypt(user.email), message: "Verification needed!" });
+        }
 
         req.login(user, (err) => {
             if (err) return next(err);
@@ -91,23 +97,28 @@ app.post("/register", async (req, res) => {
 
     if(!password && !username && !name && !gender && !birthday) return res.json({ status: 422, message: "Fields is not complete" });
 
-    const encryptedPassword = encrypt(password)
-    const encryptedUsername = encrypt(username);
-    const encryptedName = encrypt(name);
-    const encryptedGender = encrypt(gender);
-    const encryptedBirthday = encrypt(birthday);
-    const user = new User({ 
-        email: encryptedEmail,
-        username: encryptedUsername, 
-        name: encryptedName, 
-        password: encryptedPassword, 
-        gender: encryptedGender,
-        birthday: encryptedBirthday
-    });
-    await user.save();
+    try {
+        const encryptedPassword = encrypt(password)
+        const encryptedUsername = encrypt(username);
+        const encryptedName = encrypt(name);
+        const encryptedGender = encrypt(gender);
+        const encryptedBirthday = encrypt(birthday);
+        const user = new User({ 
+            email: encryptedEmail,
+            username: encryptedUsername, 
+            name: encryptedName, 
+            password: encryptedPassword, 
+            gender: encryptedGender,
+            birthday: encryptedBirthday
+        });
+        await user.save();
 
-    logger.info("USER", "A new user registered: " + user.id);
-    res.json({ status: 201, message: "User registered successfully!" });
+        logger.info("USER", "A new user registered: " + user.id);
+        return res.json({ status: 201, message: "User registered successfully!" });
+    } catch(err) {
+        logger.info("ERROR", err);
+        return res.json({ status: 403, err });
+    }
 })
 
 app.post("/send-code", async (req, res) => {
@@ -151,10 +162,10 @@ app.post("/send-code", async (req, res) => {
         `Verification Code: ${decrypt(otp.code)}`
         );
     
-    if(!sentEmail) return res.json({ status: 408 });
+    if(!sentEmail) return res.json({ status: 408, message: "Unable to send verification" });
 
     await otp.save();
-    
+
     return res.json({ status: 200 })
 })
 

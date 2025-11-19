@@ -9,16 +9,16 @@ import { decrypt, encrypt } from "../util/encrypt.js";
 export function initializePassport(passport) {
     passport.use(
         new Strategy(
-            { usernameField: "email" },
-            async (email, password, done) => {
-                const hashedEmail = encrypt(email)
-                const user = await User.findOne({ email: hashedEmail });
-                if(!user) return done(null, false, { message: "User not found!" });
+            { usernameField: "user" },
+            async (user, password, done) => {
+                const hashedUser = encrypt(user)
+                const existing = await User.findOne({ $or: [{ email: hashedUser }, { username: hashedUser }] });
+                if(!existing) return done(null, false, { message: "User not found!" });
                 
-                const match = decrypt(user.password) === password;
+                const match = decrypt(existing.password) === password;
                 if(!match) return done(null, false, { message: "Wrong password!" });
 
-                return done(null, user)
+                return done(null, existing)
             }
         )
     )   
