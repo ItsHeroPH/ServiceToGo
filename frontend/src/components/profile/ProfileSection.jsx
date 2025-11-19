@@ -79,7 +79,6 @@ export default function ProfileSection({ user }) {
                                                 onClick={() => startDeleting(async() => {
                                                     const response = (await axios.post(`${import.meta.env.VITE_API_URL}/send-code`, { email: user.email }, { withCredentials: true })).data;
                                                     if(response.status == 200) {
-                                                        setDeleting(false)
                                                         setDeleteProgress(1)
                                                     }
                                                 })}
