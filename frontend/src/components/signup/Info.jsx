@@ -1,3 +1,4 @@
+import { useTransition } from "react";
 import { useState } from "react";
 
 export default function Info({ onNext = ({}) => {} }) {
@@ -5,7 +6,7 @@ export default function Info({ onNext = ({}) => {} }) {
     const [name, setName] = useState("");
     const [gender, setGender] = useState("");
     const [birthday, setBirthday] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, startLoading] = useTransition();
 
     const isValid = username && name && gender && birthday;
     
@@ -51,15 +52,13 @@ export default function Info({ onNext = ({}) => {} }) {
                 }} placeholder="Age"/>
             </div>
             <button className={`${isValid && !isLoading ? "bg-citrus-rose cursor-pointer pointer-events-auto" : "bg-citrus-rose/50 pointer-events-none"} select-none w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
-                onClick={async() => {
-                    setIsLoading(true)
-                    onNext({
+                onClick={() => startLoading(() => onNext({
                         username,
                         name,
                         gender,
                         birthday
-                    })
-                }}
+                    }))
+                }
             >
                 Next
             </button>

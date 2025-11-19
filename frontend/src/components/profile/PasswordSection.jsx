@@ -5,12 +5,13 @@ import Password from "../signup/Password";
 import Verify from "../passwordreset/Verify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { useTransition } from "react";
 
 export default function PasswordSection() {
     const { user } = useLoaderData();
     const [isSuccess, setIsSuccess] = useState(false);
     const [data, setData] = useState({});
-    const [isLoading, setIsLoading] = useState();
+    const [isLoading, startLoading] = useTransition();
     const [progress, setProgress] = useState(0);
 
     useEffect(() => {
@@ -40,14 +41,12 @@ export default function PasswordSection() {
                 {
                     progress == 0 && (
                         <button className={`${isLoading ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} select-none w-fit px-5 py-2 rounded-lg text-md text-citrus-peach-light font-semibold`}
-                        onClick={async() => {
-                            setIsLoading(true);
+                        onClick={() => startLoading(async () => {
                             const response = (await axios.post(`${import.meta.env.VITE_API_URL}/send-code`, { email: user.email }, { withCredentials: true })).data;
                             if(response.status == 200) {
                                 setProgress(1)
-                                setIsLoading(false)
                             }
-                        }}
+                        })}
                     >
                         Change Password
                     </button>
@@ -63,15 +62,15 @@ export default function PasswordSection() {
                 }
                 {
                     progress == 2 && (
-                        <Password onNext={async(e) => {
+                        <Password onNext={(e) => startLoading(async () => {
                             handleChange(e)
                             const response = (await axios.post(`${import.meta.env.VITE_API_URL}/reset-password`, { ...data }, { withCredentials: true })).data;
                             if(response.status === 200) {
                                 setProgress(0)
                                 setIsSuccess(true)
                                 setData({ email: user.email })
-                            }
-                        }}/>
+                        }
+                        })}/>
                     )
                 }
             </div>

@@ -1,5 +1,6 @@
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useTransition } from "react";
 import { useState } from "react";
 
 export default function Password({ onNext = ({}) => {}}) {
@@ -9,7 +10,7 @@ export default function Password({ onNext = ({}) => {}}) {
     const [showPassword2, setShowPassword2] = useState(false);
     const [hasError, setHasError] = useState(false);
     const [error, setError] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, startLoading] = useTransition();
 
     const hasMinLength = password.length >= 8;
     const hasUpperLower = /(?=.*[a-z])(?=.*[A-Z])/.test(password);
@@ -50,17 +51,15 @@ export default function Password({ onNext = ({}) => {}}) {
                 )
             }
             <button className={`${isLoading || !(hasMinLength && hasUpperLower && hasSymbol) ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} select-none w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
-                onClick={() => {
-                    setIsLoading(true)
+                onClick={() => startLoading(() => {
                     if(passwordsMatch) {
                         setHasError(false)
                         onNext({ password })
                     } else {
-                        setIsLoading(false)
                         setError("Your password is not matched.");
                         setHasError(true);
                     }
-                }}>
+                })}>
                 Confirm Password
             </button>
         </div>

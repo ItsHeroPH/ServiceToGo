@@ -6,6 +6,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import Verify from "../signup/Verify";
+import { useTransition } from "react";
 
 export default function ProfileSection({ user }) {
     const navigate = useNavigate()
@@ -19,9 +20,9 @@ export default function ProfileSection({ user }) {
     const [imgPos, setImgPos] = useState({ x: 0, y: 0, width: 0, height: 0 });
     const [dragging, setDragging] = useState(false);
     const [offset, setOffset] = useState({ x: 0, y: 0 });
-    const [uploading, setUploading] = useState(false);
+    const [uploading, startUploading] = useTransition();
     const [saving, setSaving] = useState(false);
-    const [deleting, setDeleting] = useState(false);
+    const [deleting, startDeleting] = useTransition();
     const [deleteProgress, setDeleteProgress] = useState(0);
 
     const isValid = name;
@@ -75,14 +76,13 @@ export default function ProfileSection({ user }) {
                                         </div>
                                         <div className="flex flex-row items-center gap-3 self-end">
                                             <button className={`${deleting ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} select-none w-25 px-5 py-2 rounded-lg flex flex-row gap-2 justify-center items-center text-md text-citrus-peach-light font-semibold`} 
-                                                onClick={async() => {
-                                                    setDeleting(true);
+                                                onClick={() => startDeleting(async() => {
                                                     const response = (await axios.post(`${import.meta.env.VITE_API_URL}/send-code`, { email: user.email }, { withCredentials: true })).data;
                                                     if(response.status == 200) {
                                                         setDeleting(false)
                                                         setDeleteProgress(1)
                                                     }
-                                                }}
+                                                })}
                                             >
                                                 Delete
                                             </button>
@@ -176,8 +176,7 @@ export default function ProfileSection({ user }) {
                                     setOffset({ x: mouseX - imgPos.x, y: mouseY - imgPos.y });
                                 }}
                             />
-                            <button className={`${uploading ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} select-none px-5 py-2 rounded-lg text-md text-citrus-peach-light flex flex-row items-center gap-2 font-semibold`} onClick={() => {
-                                setUploading(true)
+                            <button className={`${uploading ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} select-none px-5 py-2 rounded-lg text-md text-citrus-peach-light flex flex-row items-center gap-2 font-semibold`} onClick={() => startUploading(() => {
                                 const cropX = (300 - 300) / 2;
                                 const cropY = (300 - 300) / 2;
 
@@ -198,7 +197,7 @@ export default function ProfileSection({ user }) {
                                 cropCanvas.toBlob(async (blob) => {
                                 if (!blob) return;
                                 const reader = new FileReader();
-                                reader.onloadend = async () => {
+                                reader.onloadend = () => startUploading(async () => {
                                     const base64String = reader.result.split(",")[1];
                                     try {
                                     const response = (
@@ -218,16 +217,15 @@ export default function ProfileSection({ user }) {
                                         ).data;
                                         setAvatar(URL.createObjectURL(avatarBlob));
                                         setIsCropModalOpen(false);
-                                        setUploading(false);
                                         navigate("/me/profile", { replace: true });
                                     }
                                     } catch (err) {
                                     console.error(err);
                                     }
-                                };
+                                });
                                 reader.readAsDataURL(blob);
                                 }, "image/jpeg");
-                            }}>
+                            })}>
                                 Save
                             </button>
                         </div>

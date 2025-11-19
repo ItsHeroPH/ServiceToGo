@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useTransition } from "react";
 import { useState } from "react";
 
 export default function Email({ onNext = ({}) => {}}) {
@@ -6,7 +7,7 @@ export default function Email({ onNext = ({}) => {}}) {
     const [isValid, setIsValid] = useState(false);
     const [hasError, setHasError] = useState(false);
     const [error, setError] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, startLoading] = useTransition();
 
     return (
         <div className="flex flex-col gap-3">
@@ -36,18 +37,16 @@ export default function Email({ onNext = ({}) => {}}) {
                 }
             </div>
             <button className={`${isValid && !isLoading ? "bg-citrus-rose cursor-pointer pointer-events-auto" : "bg-citrus-rose/50 pointer-events-none"} select-none w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
-                onClick={async() => {
-                    setIsLoading(true)
+                onClick={() => startLoading(async() => {
                     const response = (await axios.post(`${import.meta.env.VITE_API_URL}/register`, { email }, { withCredentials: true })).data;
 
                     if(response.status == 422) {
                         onNext({ email })
                     } else {
-                        setIsLoading(false)
                         setHasError(true)
                         setError("You've enter an existing email.")
                     }
-                }}
+                })}
             >
                 Next
             </button>

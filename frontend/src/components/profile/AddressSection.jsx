@@ -1,6 +1,7 @@
 import { faCaretDown, faL, faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
+import { useTransition } from "react";
 import { useEffect, useState } from "react";
 import { useLoaderData, useNavigate } from "react-router-dom";
 
@@ -37,7 +38,7 @@ export default function AddressSection() {
 
 function Address({ index, address }) {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, startLoading] = useTransition();
 
     return (
         <div className="w-full bg-slate-100 shadow-lg p-5 rounded-lg flex flex-col md:flex-row gap-2 justify-between md:items-center">
@@ -46,11 +47,12 @@ function Address({ index, address }) {
                 <p className="text-md text-slate-500 font-semibold">{address.address}, {address.barangay}, {address.city}, {address.province ? `${address.province}, ${address.region}` : address.region}</p>
             </div>
             <div>
-                <button className={`${isLoading ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} px-2 py-1 rounded-lg text-md text-citrus-peach-light font-semibold`} onClick={async() => {
-                    setIsLoading(true)
-                    const response = (await axios.post(`${import.meta.env.VITE_API_URL}/address/delete`, { id: address.id }, { withCredentials: true })).data;
-                    if(response.status == 200) navigate("/me/address", { replace: true })
-                }}>Delete</button>
+                <button className={`${isLoading ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} px-2 py-1 rounded-lg text-md text-citrus-peach-light font-semibold`} onClick={
+                    () => startLoading(async () => {
+                        const response = (await axios.post(`${import.meta.env.VITE_API_URL}/address/delete`, { id: address.id }, { withCredentials: true })).data;
+                        if(response.status == 200) navigate("/me/address", { replace: true })
+                    })
+                }>Delete</button>
             </div>
         </div>
     )

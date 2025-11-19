@@ -4,6 +4,7 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useTransition } from "react";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -13,8 +14,8 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [hasError, setHasError] = useState(false);
     const [error, setError] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
     const [progress, setProgress] = useState(1);
+    const [isLoading, startLoading] = useTransition();
     
     return (
         <>
@@ -48,21 +49,19 @@ export default function Login() {
                                     <button 
                                         className={`${!isLoading && ((email.length > 0 && password.length > 0) && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) ? "bg-citrus-rose cursor-pointer pointer-events-auto" : "bg-citrus-rose/50 pointer-events-none"} select-none w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
                                         onClick={
-                                            async () => {
-                                                setIsLoading(true)
+                                            () => startLoading(async () => {
                                                 const response = await (await axios.post(`${import.meta.env.VITE_API_URL}/login`, { email, password }, { withCredentials: true })).data
                                                 if(response.status === 402) {
                                                     const sendcode = (await axios.post(`${import.meta.env.VITE_API_URL}/send-code`, { email })).data;
                                                     if(sendcode.status === 200) {
-                                                        setIsLoading(false)
                                                         setProgress(2)
+                                                    } else {
                                                     }
                                                 } else {
-                                                    setIsLoading(false)
                                                     setHasError(true)
                                                     setError("Email or Password is incorrect.")
                                                 }
-                                            }
+                                            })
                                         }>
                                             Next
                                     </button>
@@ -85,24 +84,21 @@ export default function Login() {
                                     <button 
                                         className={`${isLoading ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose pointer-events-auto cursor-pointer"} w-full rounded-lg p-1 text-lg text-citrus-peach-light font-bold`}
                                         onClick={
-                                            async () => {
-                                                setIsLoading(true)
+                                            () => startLoading(async () => {
                                                 if(code.length === 6) {
                                                     const verify = (await axios.post(`${import.meta.env.VITE_API_URL}/verify`, { email, code, remove: true }, { withCredentials: true })).data;
                                                     if(verify.status == 200) {
                                                         const login = (await axios.post(`${import.meta.env.VITE_API_URL}/login`, { email, password, code }, { withCredentials: true })).data;
                                                         if(login.status == 200) return navigate("/home")
                                                     } else {
-                                                        setIsLoading(false)
                                                         setHasError(true)
                                                         setError(verify.message)
                                                     }
                                                 } else {
-                                                    setIsLoading(false)
                                                     setHasError(true)
                                                     setError("Please enter a valid 6-digits code.");
                                                 }
-                                            }
+                                            })
                                         }>
                                             Login
                                     </button>

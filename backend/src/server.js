@@ -118,9 +118,8 @@ app.post("/send-code", async (req, res) => {
     if(existing) await OTP.deleteOne({ email: encryptedEmail });
 
     const otp = new OTP({ email: encryptedEmail });
-    await otp.save();
 
-    await sendEmail(
+    const sentEmail = await sendEmail(
         email, 
         "Verification Code",
         `
@@ -151,6 +150,10 @@ app.post("/send-code", async (req, res) => {
         `,
         `Verification Code: ${decrypt(otp.code)}`
         );
+    
+    if(!sentEmail) return res.json({ status: 408 });
+
+    await otp.save();
     
     return res.json({ status: 200 })
 })
