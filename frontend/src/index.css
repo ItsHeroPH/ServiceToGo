@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  --text-2xs: 0.625rem;
   --breakpoint-xs: 30rem;
   --color-citrus-rose: #E94857;
 }
