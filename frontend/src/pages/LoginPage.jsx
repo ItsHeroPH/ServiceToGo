@@ -171,7 +171,7 @@ function Verify({ email = "", onNext = () => {} }) {
         <form className="flex flex-col gap-5" onChange={(e) => {
             const name = e.target.name;
             const value = e.target.value;
-            logger.debug(`{ \"${field}\": \"${value}\" }`);
+            logger.debug(`{ \"${name}\": \"${value}\" }`);
 
             if(name == "code") {
                 if(!isNaN(value)) {
