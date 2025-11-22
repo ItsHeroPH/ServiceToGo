@@ -6,7 +6,6 @@ const schema = new Schema({
     password: { type: String, require: true },
     username: { type: String, require: true, unique: true },
     name: { type: String, require: true },
-    birthday: { type: String, require: true },
     avatar: { type: String, default: ""},
     createdAt: { type: Date, default: Date.now }
 })

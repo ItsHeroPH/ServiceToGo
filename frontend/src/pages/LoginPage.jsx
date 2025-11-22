@@ -1,14 +1,14 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import logo1 from "../assets/logo.png";
 import logo2 from "../assets/logo2.png"
-import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
 import { useRef } from "react";
 import { useState } from "react";
-import { faEye, faEyeSlash, faLock, faShield, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faUser, faEyeSlash, faLock, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../util/api";
 import { useNavigate } from "react-router-dom";
+import { useLogger } from "../provider/LoggerProvider";
 
 export default function LoginPage() {
     const navigate = useNavigate();
@@ -29,7 +29,6 @@ export default function LoginPage() {
                                 animate={{ x: "0%", opacity: 1 }}
                                 exit={{ x: "50%", opacity: 0 }}
                                 transition={{ duration: 0.6, ease: "easeInOut" }}
-                                className="flex flex-col gap-5 pt-4 md:pt-0"
                             >
                                 <Login  onNext={(e) => {
                                     setPage(2)
@@ -46,7 +45,6 @@ export default function LoginPage() {
                                 animate={{ x: "0%", opacity: 1 }}
                                 exit={{ x: "50%", opacity: 0 }}
                                 transition={{ duration: 0.6, ease: "easeInOut" }}
-                                className="flex flex-col gap-5 pt-4 md:pt-0"
                             >
                                 <Verify email={data["email"]} onNext={async(e) => {
                                     setPage(3) 
@@ -79,6 +77,8 @@ export default function LoginPage() {
 }
 
 function Login({ onNext = () => {} }) {
+    const logger = useLogger();
+    const navigate = useNavigate();
     const userInput = useRef();
     const passInput = useRef();
     const [user, setUser] = useState("");
@@ -89,7 +89,43 @@ function Login({ onNext = () => {} }) {
     const [isLoading, startLoading] = useTransition();
 
     return (
-        <>
+        <form className="flex flex-col gap-5" onChange={(e) => {
+            setHasError(false)
+
+            const field = e.target.name;
+            const value = e.target.value;
+
+            logger.debug(`{ \"${field}\": \"${value}\" }`);
+
+            if(field === "user") {
+                setUser(value);
+                if(value.length > 0) {
+                    startLoading(async() => {
+                        const response = await api.get(`/user/${value}`)
+                        if(response.status == 404) {
+                            setError("Username or Email doesn't exist!");
+                            setHasError(true)
+                        }
+                    })
+                }
+            } else if(field === "password") {
+                setPassword(value)
+            }
+        }} onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            logger.debug(JSON.stringify(data));
+            startLoading(async() => {
+                const response = await api.post("/login", data);
+                if(response.status == 402) {
+                    onNext({ email: response.email, password: password })
+                } else {
+                    setHasError(true)
+                    setError(response.message)
+                }
+            })
+        }}>
             <h1 className="text-citrus-rose text-2xl font-bold">Hello,<br/>Wellcome Back!</h1>
             <p className="text-gray-500 font-semibold">Hey, wellcome back to ServiceToGo</p>
             <div className="bg-transparent w-full flex flex-row justify-between items-center gap-2 outline-2 outline-gray-400 px-3 py-1.5 rounded-lg cursor-text"
@@ -97,13 +133,8 @@ function Login({ onNext = () => {} }) {
                     userInput.current.focus();
                 }}
             >
-                <FontAwesomeIcon className="text-gray-400" icon={faEnvelope} />
-                <input ref={userInput} className="w-full text-gray-400 text-md outline-none font-semibold" placeholder="Email or Username" 
-                    onChange={(e) => {
-                        setHasError(false)
-                        setUser(e.target.value);
-                    }}
-                />
+                <FontAwesomeIcon className="text-gray-400" icon={faUser} />
+                <input ref={userInput} className="w-full text-gray-400 text-md outline-none font-semibold" placeholder="Email or Username" name="user"/>
             </div>
             <div className="bg-transparent w-full flex flex-row justify-between items-center gap-2 outline-2 outline-gray-400 px-3 py-1.5 rounded-lg cursor-text"
                 onClick={() => {
@@ -111,26 +142,11 @@ function Login({ onNext = () => {} }) {
                 }}
             >
                 <FontAwesomeIcon className="text-gray-400" icon={faLock} />
-                <input ref={passInput} className="w-full text-gray-400 text-md outline-none font-semibold" type={showPassword ? "text" : "password"} placeholder="Password"
-                    onChange={(e) => {
-                        setHasError(false)
-                        setPassword(e.target.value)
-                    }}
-                />
+                <input ref={passInput} className="w-full text-gray-400 text-md outline-none font-semibold" type={showPassword ? "text" : "password"} placeholder="Password" name="password"/>
                 <FontAwesomeIcon className="text-gray-400 cursor-pointer" icon={showPassword ? faEye : faEyeSlash} onClick={() => setShowPassword((prev) => !prev)}/>
             </div>
             <div className="flex flex-col">
-                <button className={`${isLoading ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} w-fit rounded-lg px-3 py-1.5 select-none text-white font-semibold`}
-                    onClick={() => startLoading(async () => {
-                        const response = await api.post("/login", { user, password });
-                        if(response.status == 402) {
-                            onNext({ email: response.email, password })
-                        } else {
-                            setHasError(true)
-                            setError(response.message);
-                        }
-                    })}
-                >
+                <button className={`${isLoading ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} w-fit rounded-lg px-3 py-1.5 select-none text-white font-semibold`}>
                     Login
                 </button>
                 {
@@ -139,19 +155,42 @@ function Login({ onNext = () => {} }) {
                     )
                 }
             </div>
-            <p className="text-gray-400 text-sm font-semibold">Don't have an account? <span className="text-citrus-rose font-bold cursor-pointer">Create New</span></p>
-        </>
+            <p className="text-gray-400 text-sm font-semibold">Don't have an account? <span className="text-citrus-rose font-bold cursor-pointer" onClick={() => navigate("/register")}>Create New</span></p>
+        </form>
     )
 }
 
 function Verify({ email = "", onNext = () => {} }) {
+    const logger = useLogger();
     const codeInput = useRef();
     const [code, setCode] = useState("");
     const [hasError, setHasError] = useState(false);
     const [error, setError] = useState("");
     const [isLoading, startLoading] = useTransition();
     return (
-        <>
+        <form className="flex flex-col gap-5" onChange={(e) => {
+            const name = e.target.name;
+            const value = e.target.value;
+            logger.debug(`{ \"${field}\": \"${value}\" }`);
+
+            if(name == "code") {
+                if(!isNaN(value)) {
+                    setHasError(false)
+                    setCode(value)
+                }
+            }
+        }} onSubmit={(e) => {
+            e.preventDefault();
+            startLoading(async () => {
+                const response = await api.post("/verify", { email, code, remove: false });
+                if(response.status == 200) {
+                    onNext({ code })
+                } else {
+                    setHasError(true);
+                    setError(response.message);
+                }
+            })
+        }}>
             <h1 className="text-citrus-rose text-2xl font-bold">Verification</h1>
             <p className="text-gray-500 font-semibold">We sent you a 6-digit verification code to your email. Kindly check your email.</p>
             <div className="bg-transparent w-full flex flex-row justify-between items-center gap-2 outline-2 outline-gray-400 px-3 py-1.5 rounded-lg cursor-text"
@@ -159,26 +198,10 @@ function Verify({ email = "", onNext = () => {} }) {
                     codeInput.current.focus();
                 }}
             >
-                <input ref={codeInput} className="w-full text-gray-400 text-md outline-none font-semibold" placeholder="Code" maxLength={6} value={code} onChange={(e) => {
-                    const value = e.target.value;
-                    if(!isNaN(value)) {
-                        setHasError(false);
-                        setCode(value);
-                    }
-                }}/>
+                <input ref={codeInput} className="w-full text-gray-400 text-md outline-none font-semibold" placeholder="Code" maxLength={6} value={code} name="code"/>
             </div>
-            <div>
-                <button className={`${isLoading ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} w-fit rounded-lg px-3 py-1.5 select-none text-white font-semibold`}
-                    onClick={() => startLoading(async () => {
-                        const response = await api.post("/verify", { email, code, remove: false });
-                        if(response.status == 200) {
-                            onNext({ code })
-                        } else {
-                            setHasError(true);
-                            setError(response.message);
-                        }
-                    })}
-                >
+            <div className="flex flex-col">
+                <button className={`${isLoading ? "bg-citrus-rose/50 pointer-events-none" : "bg-citrus-rose cursor-pointer pointer-events-auto"} w-fit rounded-lg px-3 py-1.5 select-none text-white font-semibold`}>
                     Verify
                 </button>
                 {
@@ -187,6 +210,6 @@ function Verify({ email = "", onNext = () => {} }) {
                     )
                 }
             </div>
-        </>
+        </form>
     )
 }
