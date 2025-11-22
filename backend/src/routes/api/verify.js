@@ -43,7 +43,7 @@ router.post("/send-code", async(req, res) => {
             </head>
             <body>
                 <div style="width:100%; text-align:center;">
-                    <img src="https://servicetogo.store/assets/img/logo2.png" width="200" alt="ServiceToGo">
+                    <img src="https://www.servicetogo.store/assets/img/logo2.png" width="200" alt="ServiceToGo">
                     <table style="justify-self: center;">
                         <tr>
                             <td style="text-align:left; position:relative;">

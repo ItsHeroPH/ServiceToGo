@@ -14,7 +14,9 @@ const RegisterPage = lazy(() => import("./pages/Register"));
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage/>,
+    element: <Suspense fallback={<LoadingScreen/>}>
+        <HomePage/>
+      </Suspense>,
     loader: async() => {
       const user = await getUser();
 
@@ -23,7 +25,9 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <LoginPage/>,
+    element: <Suspense fallback={<LoadingScreen/>}>
+        <LoginPage/>
+      </Suspense>,
     loader: async() => {
       const user = await getUser();
       if(user) return redirect("/");
@@ -31,7 +35,9 @@ const router = createBrowserRouter([
   },
   {
     path: "/register",
-    element: <RegisterPage/>,
+    element: <Suspense fallback={<LoadingScreen/>}>
+        <RegisterPage/>
+      </Suspense>,
     loader: async() => {
       const user = await getUser();
       if(user) return redirect("/");
@@ -42,9 +48,7 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <LoggerProvider>
-      <Suspense fallback={<LoadingScreen/>}>
         <RouterProvider router={router}/>
-      </Suspense>
     </LoggerProvider>
   </StrictMode>
 )
