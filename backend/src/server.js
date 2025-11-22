@@ -35,14 +35,14 @@ app.set("trust proxy", 1);
 app.use(cookieParser())
 // Main Frontend Cors
 app.use("/api", cors({ 
-    origin: [process.env.FRONTEND_URL.split(",")[0]], 
+    origin: [process.env.FRONTEND_URL.split(",")], 
     methods: ['GET','POST','PUT'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
 // Admin Frontend Cors
 app.use("/admin", cors({ 
-    origin: [process.env.FRONTEND_URL.split(",")[1]], 
+    origin: [process.env.ADMIN_URL.split(",")], 
     methods: ['GET','POST','PUT'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
