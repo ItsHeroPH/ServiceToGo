@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useLogger } from "../provider/LoggerProvider";
 
 export default function LoginPage() {
+    const logger = useLogger();
     const navigate = useNavigate();
     const [page, setPage] = useState(1);
     const [data, setData] = useState({});
@@ -48,9 +49,13 @@ export default function LoginPage() {
                             >
                                 <Verify email={data["email"]} onNext={async(e) => {
                                     setPage(3) 
-                                    const response = await api.post("/login", { user: data.email, password: data.password, code: e.code });
-                                    if(response.status == 200) {
-                                        navigate("/")
+                                    try {
+                                        const response = await api.post("/login", { user: data.email, password: data.password, code: e.code });
+                                        if(response.status == 200) {
+                                            navigate("/")
+                                        }
+                                    } catch(err) {
+                                        logger.error(err);
                                     }
                                 }}/>
                             </motion.div>
@@ -101,10 +106,15 @@ function Login({ onNext = () => {} }) {
                 setUser(value);
                 if(value.length > 0) {
                     startLoading(async() => {
-                        const response = await api.get(`/user/${value}`)
-                        if(response.status == 404) {
-                            setError("Username or Email doesn't exist!");
-                            setHasError(true)
+                        try {
+                            const response = await api.get(`/user/${value}`)
+                            if(response.status == 404) {
+                                setError("Username or Email doesn't exist!");
+                                setHasError(true)
+                            }
+                        } catch(err) {
+                            setHasError(true);
+                            setError(err);
                         }
                     })
                 }
@@ -117,12 +127,17 @@ function Login({ onNext = () => {} }) {
             const data = Object.fromEntries(formData.entries());
             logger.debug(JSON.stringify(data));
             startLoading(async() => {
-                const response = await api.post("/login", data);
-                if(response.status == 402) {
-                    onNext({ email: response.email, password: password })
-                } else {
-                    setHasError(true)
-                    setError(response.message)
+                try {
+                    const response = await api.post("/login", data);
+                    if(response.status == 402) {
+                        onNext({ email: response.email, password: password })
+                    } else {
+                        setHasError(true)
+                        setError(response.message)
+                    }
+                } catch(err) {
+                    setHasError(true);
+                    setError(err);
                 }
             })
         }}>

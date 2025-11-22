@@ -10,6 +10,7 @@ import { faAddressBook, faCheck, faEye, faEyeSlash, faLock, faSpinner, faUser, f
 import { useLogger } from "../provider/LoggerProvider";
 
 export default function Register() {
+    const logger = useLogger();
     const navigate = useNavigate();
     const [page, setPage] = useState(1);
     const [data, setData] = useState({});
@@ -89,10 +90,14 @@ export default function Register() {
                             <Info onNext={async(info) => {
                                 setPage(6)
                                 setData((prev) => ({...prev, ...info}))
-                                const register = await api.post("/register", {...data, ...info});
-                                if(register.status == 201) {
-                                    const login = await api.post("/login", { user: data["email"], password: data["password"], code: data["code"] });
-                                    if(login.status == 200) return navigate("/");
+                                try {
+                                    const register = await api.post("/register", {...data, ...info});
+                                    if(register.status == 201) {
+                                        const login = await api.post("/login", { user: data["email"], password: data["password"], code: data["code"] });
+                                        if(login.status == 200) return navigate("/");
+                                    }
+                                } catch(err) {
+                                    logger.error(err)
                                 }
                             }}/>
                         </motion.div>
@@ -153,11 +158,16 @@ function Email({ onNext = ({}) => {} }) {
                     setEmail(value)
                     if(value.length > 0) {
                         if(/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(value)) {
-                            const response = await api.get(`/user/${value}`);
-                            if(response.status == 409) {
-                                setHasError("Email is already exist");
-                            } else {
-                                setHasError(false);
+                            try {
+                                const response = await api.get(`/user/${value}`);
+                                if(response.status == 409) {
+                                    setHasError("Email is already exist");
+                                } else {
+                                    setHasError(false);
+                                }
+                            } catch(err) {
+                                setHasError(true);
+                                setError(err);
                             }
                         } else {
                             setHasError(true);
@@ -171,12 +181,17 @@ function Email({ onNext = ({}) => {} }) {
         }} onSubmit={(e) => {
             e.preventDefault();
             startLoading(async() => {
-                const response = await api.post("/verify/send-code", { email });
-                if(response.status == 200) {
-                    onNext({ email });
-                } else {
+                try {
+                    const response = await api.post("/verify/send-code", { email });
+                    if(response.status == 200) {
+                        onNext({ email });
+                    } else {
+                        setHasError(true);
+                        setError("Unable to send verification code.")
+                    }
+                } catch(err) {
                     setHasError(true);
-                    setError("Unable to send verification code.")
+                    setError(err);
                 }
             })
         }}>
@@ -228,12 +243,17 @@ function Verify({ email = "", onNext = () => {} }) {
         }} onSubmit={(e) => {
             e.preventDefault();
             startLoading(async () => {
-                const response = await api.post("/verify", { email, code, remove: false });
-                if(response.status == 200) {
-                    onNext({ code })
-                } else {
+                try {
+                    const response = await api.post("/verify", { email, code, remove: false });
+                    if(response.status == 200) {
+                        onNext({ code })
+                    } else {
+                        setHasError(true);
+                        setError(response.message);
+                    }
+                } catch(err) {
                     setHasError(true);
-                    setError(response.message);
+                    setError(err);
                 }
             })
         }}>
@@ -361,15 +381,20 @@ function Info({ onNext = ({}) => {}}) {
         }
         logger.debug(`{ \"username\": \"${username}\" }`);
         startLoading(async() => {
-            const response = await api.get(`/user/${username}`)
-            if(response.status == 404) {
-                setValidUsername(true);
-            } else {
-                if(isUsernameGenerated) {
-                    setUsername(name.replaceAll(" ", ".").replaceAll("\_", ".") + Math.floor((100 * Math.random()) * 1000))
+            try {
+                const response = await api.get(`/user/${username}`)
+                if(response.status == 404) {
+                    setValidUsername(true);
                 } else {
-                    setValidUsername(false);
+                    if(isUsernameGenerated) {
+                        setUsername(name.replaceAll(" ", ".").replaceAll("\_", ".") + Math.floor((100 * Math.random()) * 1000))
+                    } else {
+                        setValidUsername(false);
+                    }
                 }
+            } catch(err) {
+                setHasError(true);
+                setError(err);
             }
         })
     }, [username])
