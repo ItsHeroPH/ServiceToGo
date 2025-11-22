@@ -19,7 +19,7 @@ router.post("/login", checkUserIfAuthenticated({
         if(!user) return res.json({ status: 401, message: "Invalid credentials" });
 
         if(!req.body.code) {
-            await axios.post(`${process.env.BACKEND_URL.split(",")[0]}/api/verify/send-code`, { email: decrypt(user.email)}, { headers: {
+            await axios.post(`${process.env.BACKEND_URL}/api/verify/send-code`, { email: decrypt(user.email)}, { headers: {
                 "Origin": req.headers.origin
             }});
             return res.json({ status: 402, email: decrypt(user.email), message: "Verification needed!" });
