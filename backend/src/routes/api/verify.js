@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { decrypt, encrypt } from "../../util/encrypt.js";
-import OTP from "../../database/OTP.js";
+import OTP from "../../database/otp.js";
 import { sendEmail } from "../../util/mailer.js";
 
 const router = new Router();

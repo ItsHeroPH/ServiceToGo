@@ -2,7 +2,7 @@ import passport from "passport";
 import { decrypt } from "../util/encrypt.js";
 import UserStrategy from "./UserStrategy.js";
 import AdminStrategy from "./AdminStrategy.js";
-import User from "../database/User.js";
+import User from "../database/user.js";
 
 /**
  * @param {passport} passport 

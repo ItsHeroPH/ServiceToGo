@@ -1,7 +1,7 @@
 import { Router } from "express";
 import checkUserIfAuthenticated from "../../middlewares/checkUserIfAuthenticated.js";
 
-import User from "../../database/User.js";
+import User from "../../database/user.js";
 import { encrypt } from "../../util/encrypt.js";
 
 const router = new Router();

@@ -7,7 +7,7 @@ import logger from "../../util/logger.js";
 import user from "./user.js";
 import verify from "./verify.js";
 import { decrypt, encrypt } from "../../util/encrypt.js";
-import User from "../../database/User.js";
+import User from "../../database/user.js";
 
 const router = new Router();
 

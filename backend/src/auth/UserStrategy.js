@@ -1,5 +1,5 @@
 import { Strategy } from "passport-strategy";
-import User from "../database/User.js";
+import User from "../database/user.js";
 import logger from "../util/logger.js";
 import { decrypt, encrypt } from "../util/encrypt.js";
 
