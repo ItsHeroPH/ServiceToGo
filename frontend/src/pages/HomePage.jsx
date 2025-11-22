@@ -22,7 +22,7 @@ export default function HomePage() {
 
 function Cards() {
     return (
-        <div className="bg-gray-100 w-38 h-fit xs:w-45 h-50 flex flex-col cursor-pointer transition-all duration-300 shadow-gray-700 hover:shadow-md">
+        <div className="bg-gray-100 w-40 h-fit xs:w-45 h-50 flex flex-col cursor-pointer transition-all duration-300 shadow-gray-700 hover:shadow-md">
             <img className="w-full aspect-3/2" src={image}/>
             <div className="px-2 py-3 flex flex-col">
                 <h1 className="text-black text-base font-bold line-clamp-2">Example title of a service for testing purposes only</h1>
